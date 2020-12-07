@@ -1,5 +1,13 @@
+<script context="module">
+	export function preload() {
+		return this.fetch(`recipes`).then(r => r.json()).then(recipes => {
+			return { recipes };
+		});
+	}
+</script>
+
 <script>
-	// import successkid from 'images/successkid.jpg';
+	export let recipes;
 </script>
 
 <style>
@@ -46,5 +54,15 @@
 	<img alt="Success Kid" src="/successkid.jpg">
 	<figcaption>Have fun with Sapper!</figcaption>
 </figure>
+
+<ul>
+	{#each recipes as recipe}
+		<!-- we're using the non-standard `rel=prefetch` attribute to
+				tell Sapper to load the data for the page as soon as
+				the user hovers over the link or taps it, instead of
+				waiting for the 'click' event -->
+		<li>{recipe.name}</li>
+	{/each}
+</ul>
 
 <p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
