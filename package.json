@@ -1,6 +1,6 @@
 {
   "name": "cookbook",
-  "description": "TODO",
+  "description": "Recipe manager app",
   "version": "0.0.1",
   "scripts": {
     "dev": "sapper dev",
