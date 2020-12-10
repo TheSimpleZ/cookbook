@@ -1,9 +1,19 @@
 <script context="module">
-	export function preload() {
-		return this.fetch(`recipes`).then(r => r.json()).then(recipes => {
-			return { recipes };
-		});
-	}
+	import { collection, preloader } from '../store'
+	// console.log(recipes)
+	const recipes = collection('recipes')
+	export const preload = preloader(recipes)
+	// export function preload(page, session) {
+	// 	// recipes.subscribe(
+	// 		// 	data => data.length && console.log(data)
+	// 		// )
+			
+	// 	return new Promise(
+	// 		resolve => recipes.subscribe(
+	// 			data => data.length && resolve(recipes)
+	// 		)
+	// 	);
+	// }
 </script>
 
 <script>
@@ -55,12 +65,10 @@
 	<figcaption>Have fun with Sapper!</figcaption>
 </figure>
 
+<!-- {recipes[0].name} -->
+
 <ul>
-	{#each recipes as recipe}
-		<!-- we're using the non-standard `rel=prefetch` attribute to
-				tell Sapper to load the data for the page as soon as
-				the user hovers over the link or taps it, instead of
-				waiting for the 'click' event -->
+	{#each $recipes as recipe}
 		<li>{recipe.name}</li>
 	{/each}
 </ul>
