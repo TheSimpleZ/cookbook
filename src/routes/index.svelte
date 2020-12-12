@@ -1,23 +1,7 @@
 <script context="module">
 	import { collection, preloader } from '../store'
-	// console.log(recipes)
 	const recipes = collection('recipes')
 	export const preload = preloader(recipes)
-	// export function preload(page, session) {
-	// 	// recipes.subscribe(
-	// 		// 	data => data.length && console.log(data)
-	// 		// )
-			
-	// 	return new Promise(
-	// 		resolve => recipes.subscribe(
-	// 			data => data.length && resolve(recipes)
-	// 		)
-	// 	);
-	// }
-</script>
-
-<script>
-	export let recipes;
 </script>
 
 <style>
