@@ -1,5 +1,5 @@
 <script context="module">
-	import { collection, preloader } from '../store'
+	import { collection, preloader } from '../lib/store'
 	const recipes = collection('recipes')
 	export const preload = preloader(recipes)
 </script>
