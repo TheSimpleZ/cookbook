@@ -1,5 +1,7 @@
 <script>
-    import { NavigationDrawer, List, ListItem } from "svelte-materialify";
+    import {
+  NavigationDrawer, List, ListItem 
+} from 'svelte-materialify'
 </script>
 
 <style>
