@@ -42,7 +42,10 @@
 	<title>Cookbook Login</title>
 </svelte:head>
 
-<div id="firebaseui-auth-container" />
-<div bind:this={loader}>Loading...</div>
+
+<div>
+  <div id="firebaseui-auth-container" />
+  <div bind:this={loader}>Loading...</div>
+</div>
 
 

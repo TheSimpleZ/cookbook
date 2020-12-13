@@ -2,7 +2,7 @@
 	import { auth } from '../lib/firebase'
 	import Cookies from 'js-cookie'
 	import Nav from '../components/Nav.svelte'
-	import Sidebar from '../components/Sidebar.svelte'
+
 	import { MaterialApp } from 'svelte-materialify'
 	
 	import { onMount } from 'svelte'
@@ -41,9 +41,6 @@
 		<Nav></Nav>
 	</div>
 	<div>
-		<Sidebar></Sidebar>
-	</div>
-	<div style= 'padding-left:270px; padding-top:10px'>
 		<slot></slot>
 	</div>
 </MaterialApp>
