@@ -2,11 +2,15 @@
 	import Nav from '../components/Nav.svelte'
 	import { auth } from '../lib/firebase'
 	import Cookies from 'js-cookie'
-
+	import Nav from '../components/Nav.svelte';
+	import Sidebar from '../components/Sidebar.svelte';
+	import { MaterialApp } from 'svelte-materialify';
+	
 	import { onMount } from 'svelte'
 	import { stores } from '@sapper/app'
-
+	
 	export let segment
+	let theme = 'light';
 
 	const { session } = stores()
 
@@ -33,19 +37,13 @@
 	})
 </script>
 
-<style>
-	main {
-		position: relative;
-		max-width: 56em;
-		background-color: white;
-		padding: 2em;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-</style>
-
-<Nav {segment} />
-
-<main>
-	<slot />
-</main>
+	
+<MaterialApp theme='{theme}'>
+	<div>	
+		<Nav></Nav>
+	</div>
+	<div>
+	<Sidebar/>
+	</div>
+	<slot></slot>
+</MaterialApp>

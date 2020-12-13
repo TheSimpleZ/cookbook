@@ -1,6 +1,7 @@
 <script>
 	export let segment
-
+	
+	import {AppBar} from 'svelte-materialify'
 	import { auth } from '../lib/firebase'
 	export let username
 
@@ -77,15 +78,7 @@
 </style>
 
 <nav>
-	<ul>
-		<li>
-			<a
-				aria-current={segment === undefined ? 'page' : undefined}
-				href=".">home</a>
-		</li>
-		<li>
-			<p>{username}</p>
-		</li>
-		<li><button on:click={logout}>Logout</button></li>
-	</ul>
+<AppBar>
+	<h5>Cookbook</h5>
+</AppBar>
 </nav>
