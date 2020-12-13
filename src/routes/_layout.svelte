@@ -1,16 +1,14 @@
 <script>
-	import Nav from '../components/Nav.svelte'
 	import { auth } from '../lib/firebase'
 	import Cookies from 'js-cookie'
-	import Nav from '../components/Nav.svelte';
-	import Sidebar from '../components/Sidebar.svelte';
-	import { MaterialApp } from 'svelte-materialify';
+	import Nav from '../components/Nav.svelte'
+	import Sidebar from '../components/Sidebar.svelte'
+	import { MaterialApp } from 'svelte-materialify'
 	
 	import { onMount } from 'svelte'
 	import { stores } from '@sapper/app'
 	
-	export let segment
-	let theme = 'light';
+	let theme = 'dark'
 
 	const { session } = stores()
 
