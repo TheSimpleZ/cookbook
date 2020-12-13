@@ -3,7 +3,7 @@
 </script>
 
 <sidebar>
-    <NavigationDrawer >
+    <NavigationDrawer absolute clipped>
         <List>
             <ListItem>
                 Recipie 1

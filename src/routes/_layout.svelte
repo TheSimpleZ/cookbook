@@ -43,7 +43,9 @@
 		<Nav></Nav>
 	</div>
 	<div>
-	<Sidebar/>
+		<Sidebar></Sidebar>
 	</div>
-	<slot></slot>
+	<div style= 'padding-left:270px; padding-top:10px'>
+		<slot></slot>
+	</div>
 </MaterialApp>
