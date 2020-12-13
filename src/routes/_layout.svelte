@@ -1,4 +1,7 @@
 <script>
+
+
+
 	import { auth } from '../lib/firebase'
 	import Cookies from 'js-cookie'
 	import Nav from '../components/Nav.svelte'
@@ -38,9 +41,9 @@
 	
 <MaterialApp theme='{theme}'>
 	<div>	
-		<Nav></Nav>
+		<Nav />
 	</div>
 	<div>
-		<slot></slot>
+		<slot />
 	</div>
 </MaterialApp>

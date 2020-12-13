@@ -40,6 +40,7 @@ module.exports = {
     ],
     'object-curly-spacing': ['error', 'always'],
     'object-curly-newline': ['error', { multiline: true, minProperties: 3 }],
-    'quote-props': ['error', 'as-needed']
+    'quote-props': ['error', 'as-needed'],
+    'no-multi-spaces': 'error'
   }
 }

@@ -2,7 +2,7 @@
 	
 	import { AppBar, Button } from 'svelte-materialify'
 	import { auth } from '../lib/firebase'
-	export let username
+	let username
 
 	import { onMount } from 'svelte'
 	import { goto } from '@sapper/app'

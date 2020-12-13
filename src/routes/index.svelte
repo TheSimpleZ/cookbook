@@ -1,3 +1,11 @@
+<script context="module">
+  export async function preload(page, { user }) {
+    if (user) {
+      return this.redirect(302, '/dashboard')
+    }
+  }
+</script>
+
 <script>
   import { auth, fb } from '../lib/firebase'
   import 'firebaseui/dist/firebaseui.css'
@@ -13,13 +21,11 @@
 
     var uiConfig = {
       callbacks: {
-        signInSuccessWithAuthResult: function () {
         // User successfully signed in.
         // Return type determines whether we continue the redirect automatically
         // or whether we leave that to developer to handle.
-          return true
-        },
-        uiShown: function () {
+        signInSuccessWithAuthResult: () => true,
+        uiShown: () => {
         // The widget is rendered.
         // Hide the loader.
           loader.style.display = 'none'
