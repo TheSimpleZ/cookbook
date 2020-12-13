@@ -4,6 +4,29 @@
 	export const preload = preloader(recipes)
 </script>
 
+<script>
+	import {auth } from '../lib/firebase'
+	export let username
+
+	import { onMount } from 'svelte'
+
+onMount(async () => {
+
+	  auth.onAuthStateChanged(function(user) {
+	    if (user) {
+	      // User is signed in.
+	      username = user.displayName
+			
+	    } else {
+	      // User is signed out.
+	      username = undefined
+	    }
+	  }, function(error) {
+	    console.log(error)
+	  })
+})
+</script>
+
 <style>
 	h1, figure, p {
 		text-align: center;
@@ -42,7 +65,7 @@
 	<title>Sapper project template</title>
 </svelte:head>
 
-<h1>Great success!123</h1>
+<h1>Great success! {username}</h1>
 
 <figure>
 	<img alt="Success Kid" src="/successkid.jpg">
