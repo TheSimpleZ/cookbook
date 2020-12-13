@@ -5,14 +5,18 @@ module.exports = {
     node: true
   },
   extends: 'eslint:recommended',
-  parserOptions: { ecmaVersion: 12,
-    sourceType: 'module' },
+  parserOptions: {
+    ecmaVersion: 12,
+    sourceType: 'module' 
+  },
   plugins: [
     'svelte3'
   ],
   overrides: [
-    { files: ['*.svelte'],
-      processor: 'svelte3/svelte3' }
+    {
+      files: ['*.svelte'],
+      processor: 'svelte3/svelte3' 
+    }
   ],
   rules: {
     indent: [
@@ -35,7 +39,7 @@ module.exports = {
       'error'
     ],
     'object-curly-spacing': ['error', 'always'],
-    'object-curly-newline': ['error', { multiline: false, minProperties: 3 }],
+    'object-curly-newline': ['error', { multiline: true, minProperties: 3 }],
     'quote-props': ['error', 'as-needed']
   }
 }
