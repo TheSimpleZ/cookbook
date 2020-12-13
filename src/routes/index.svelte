@@ -1,7 +1,7 @@
 <script context="module">
-  export async function preload(page, { user }) {
+  export async function preload(_, { user }) {
     if (user) {
-      return this.redirect(302, '/dashboard')
+      return this.redirect(302, '/recipes')
     }
   }
 </script>
@@ -33,7 +33,7 @@
       },
       // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
       signInFlow: 'popup',
-      signInSuccessUrl: '/dashboard',
+      signInSuccessUrl: '/recipes',
       signInOptions: [
         // Leave the lines as is for the providers you want to offer your users.
         fb.auth.GoogleAuthProvider.PROVIDER_ID,

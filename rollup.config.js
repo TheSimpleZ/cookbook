@@ -8,6 +8,7 @@ import babel from '@rollup/plugin-babel'
 import { terser } from 'rollup-plugin-terser'
 import config from 'sapper/config/rollup.js'
 import pkg from './package.json'
+const { preprocess } = require('./svelte.config')
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -31,6 +32,7 @@ export default {
         'process.env.NODE_ENV': JSON.stringify(mode) 
       }),
       svelte({
+        preprocess,
         dev,
         hydratable: true,
         emitCss: true
@@ -74,6 +76,7 @@ export default {
         'process.env.NODE_ENV': JSON.stringify(mode) 
       }),
       svelte({
+        preprocess,
         generate: 'ssr',
         hydratable: true,
         dev
