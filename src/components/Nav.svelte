@@ -1,6 +1,6 @@
 <script>
 	
-	import { AppBar } from 'svelte-materialify'
+	import { AppBar, Button } from 'svelte-materialify'
 	import { auth } from '../lib/firebase'
 	export let username
 
@@ -33,6 +33,15 @@
 
 <nav>
 <AppBar>
-	<h5>Cookbook</h5>
+	<span slot="title">Cookbook</span>
+	<a href='.' style='text-decoration:none'>
+		<Button depressed>Home</Button>
+	</a>
+	<a href='/dashboard' style='text-decoration:none'>
+		<Button depressed>Dashboard</Button>
+	</a>
+	<a href='/login_page' style='text-decoration:none'>
+	<Button depressed>Login</Button>
+	</a>
 </AppBar>
 </nav>
