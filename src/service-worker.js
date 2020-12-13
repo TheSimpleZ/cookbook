@@ -1,4 +1,6 @@
-import { timestamp, files, shell } from '@sapper/service-worker'
+import {
+  timestamp, files, shell 
+} from '@sapper/service-worker'
 
 const ASSETS = `cache${timestamp}`
 

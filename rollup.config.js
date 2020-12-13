@@ -17,8 +17,8 @@ const dev = mode === 'development'
 const legacy = !!process.env.SAPPER_LEGACY_BUILD
 
 const onwarn = (warning, onwarn) =>
-  (warning.code === 'MISSING_EXPORT' && /'preload'/.test(warning.message)) ||
-	(warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) ||
+  warning.code === 'MISSING_EXPORT' && /'preload'/.test(warning.message) ||
+	warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message) ||
 	onwarn(warning)
 
 export default {
@@ -26,23 +26,17 @@ export default {
     input: config.client.input(),
     output: config.client.output(),
     plugins: [
-      replace({
-        'process.browser': true,
-        'process.env.NODE_ENV': JSON.stringify(mode)
-      }),
+      replace({ 'process.browser': true,
+        'process.env.NODE_ENV': JSON.stringify(mode) }),
       svelte({
         dev,
         hydratable: true,
         emitCss: true
       }),
-      url({
-        sourceDir: path.resolve(__dirname, 'src/node_modules/images'),
-        publicPath: '/client/'
-      }),
-      resolve({
-        browser: true,
-        dedupe: ['svelte']
-      }),
+      url({ sourceDir: path.resolve(__dirname, 'src/node_modules/images'),
+        publicPath: '/client/' }),
+      resolve({ browser: true,
+        dedupe: ['svelte'] }),
       commonjs(),
 
       legacy && babel({
@@ -50,21 +44,15 @@ export default {
         babelHelpers: 'runtime',
         exclude: ['node_modules/@babel/**'],
         presets: [
-          ['@babel/preset-env', {
-            targets: '> 0.25%, not dead'
-          }]
+          ['@babel/preset-env', { targets: '> 0.25%, not dead' }]
         ],
         plugins: [
           '@babel/plugin-syntax-dynamic-import',
-          ['@babel/plugin-transform-runtime', {
-            useESModules: true
-          }]
+          ['@babel/plugin-transform-runtime', { useESModules: true }]
         ]
       }),
 
-      !dev && terser({
-        module: true
-      })
+      !dev && terser({ module: true })
     ],
 
     preserveEntrySignatures: false,
@@ -73,12 +61,10 @@ export default {
 
   server: {
     input: config.server.input(),
-    output: {...config.server.output(), exports: 'default'},
+    output: { ...config.server.output(), exports: 'default' },
     plugins: [
-      replace({
-        'process.browser': false,
-        'process.env.NODE_ENV': JSON.stringify(mode)
-      }),
+      replace({ 'process.browser': false,
+        'process.env.NODE_ENV': JSON.stringify(mode) }),
       svelte({
         generate: 'ssr',
         hydratable: true,
@@ -89,9 +75,7 @@ export default {
         publicPath: '/client/',
         emitFiles: false // already emitted by client build
       }),
-      resolve({
-        dedupe: ['svelte']
-      }),
+      resolve({ dedupe: ['svelte'] }),
       commonjs()
     ],
     external: Object.keys(pkg.dependencies).concat(require('module').builtinModules),
@@ -105,10 +89,8 @@ export default {
     output: config.serviceworker.output(),
     plugins: [
       resolve(),
-      replace({
-        'process.browser': true,
-        'process.env.NODE_ENV': JSON.stringify(mode)
-      }),
+      replace({ 'process.browser': true,
+        'process.env.NODE_ENV': JSON.stringify(mode) }),
       commonjs(),
       !dev && terser()
     ],

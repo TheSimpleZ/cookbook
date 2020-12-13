@@ -22,9 +22,7 @@ if(process.browser) {
     console.log('You must run the getKey.sh script. Read the readme for Firebase access')
   }  
   
-  firebaseConfig = {
-    credential: fb.credential.cert(JSON.parse(Buffer.from(creds, 'base64').toString())),
-  }
+  firebaseConfig = { credential: fb.credential.cert(JSON.parse(Buffer.from(creds, 'base64').toString())), }
 }
 
 

@@ -12,19 +12,17 @@
     const ui = new fbui.auth.AuthUI(auth)
 
     var uiConfig = {
-      callbacks: {
-        signInSuccessWithAuthResult: function () {
-          // User successfully signed in.
-          // Return type determines whether we continue the redirect automatically
-          // or whether we leave that to developer to handle.
-          return true
-        },
-        uiShown: function () {
-          // The widget is rendered.
-          // Hide the loader.
-          loader.style.display = 'none'
-        },
+      callbacks: {  signInSuccessWithAuthResult: function () {
+        // User successfully signed in.
+        // Return type determines whether we continue the redirect automatically
+        // or whether we leave that to developer to handle.
+        return true
       },
+      uiShown: function () {
+        // The widget is rendered.
+        // Hide the loader.
+        loader.style.display = 'none'
+      }, },
       // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
       signInFlow: 'popup',
       signInSuccessUrl: '/',

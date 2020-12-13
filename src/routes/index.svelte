@@ -5,7 +5,7 @@
 </script>
 
 <script>
-	import {auth } from '../lib/firebase'
+	import { auth } from '../lib/firebase'
 	export let username
 
 	import { onMount } from 'svelte'

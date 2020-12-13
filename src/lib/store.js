@@ -59,27 +59,23 @@ export function collection(ref, query) {
       snapshot => set(snapshot.docs.map(
         doc => {
           const update = throttle(target => {
-            const data = {
-              ...target, updated: new Date
-            }
+            const data = { ...target, updated: new Date }
 
             delete data.id
 
             doc.ref.update(data)
           }, 100, 500)
 
-          return new Proxy({ id: doc.id, ...doc.data() }, {
-            get(_, prop) {
-              return prop === 'delete'
-                ? doc.ref.delete.bind(doc.ref)
-                : Reflect.get(...arguments)
-            },
-            set(target) {
-              Reflect.set(...arguments)
-              update(target)
-              return true
-            }
-          })
+          return new Proxy({ id: doc.id, ...doc.data() }, { get(_, prop) {
+            return prop === 'delete'
+              ? doc.ref.delete.bind(doc.ref)
+              : Reflect.get(...arguments)
+          },
+          set(target) {
+            Reflect.set(...arguments)
+            update(target)
+            return true
+          } })
         }
       ))
     )
@@ -96,26 +92,24 @@ export function collection(ref, query) {
    * The purpose of this proxy is that you can build queries with the store.
    * And that for every additional query method you just get back a new Svelte store.
    */
-  return new Proxy(store, {
-    get(target, prop, receiver) {
-      if (prop in target) {
-        return Reflect.get(...arguments)
-      }
+  return new Proxy(store, { get(target, prop, receiver) {
+    if (prop in target) {
+      return Reflect.get(...arguments)
+    }
 
-      if (prop in query && typeof query[prop] === 'function') {
-        const queryFunc = Reflect.get(query, prop, receiver).bind(query)
+    if (prop in query && typeof query[prop] === 'function') {
+      const queryFunc = Reflect.get(query, prop, receiver).bind(query)
 
-        return function() {
-          const newQuery = queryFunc(...arguments)
+      return function() {
+        const newQuery = queryFunc(...arguments)
 
-          return collection(ref, newQuery)
-        }
+        return collection(ref, newQuery)
       }
     }
-  })
+  } })
 }
 
-export const preloader = store => ({params}) => {
+export const preloader = store => ({ params }) => {
   return new Promise(
     resolve => store.subscribe(
       data => data.length && resolve(params)
