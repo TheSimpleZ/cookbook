@@ -2,7 +2,9 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
+  "svelte.plugin.typescript.enable": false,
   "eslint.validate": [
-    "javascript"
+      "javascript",
+      "svelte"
   ]
 }
