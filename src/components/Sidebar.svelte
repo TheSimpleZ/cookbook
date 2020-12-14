@@ -7,7 +7,7 @@
 <style>
 </style>
 
-<NavigationDrawer borderless>
+<NavigationDrawer>
     <List>
         <ListItem>Recipie 1</ListItem>
         <ListItem>Recipie 2</ListItem>

@@ -1,12 +1,11 @@
 <script>
 	import { auth } from '../lib/firebase'
 	import Cookies from 'js-cookie'
-	import Nav from '../components/Nav.svelte'
-
+	import { AppBar, Button } from 'svelte-materialify'
+	import { stores, goto } from '@sapper/app'
 	import { MaterialApp } from 'svelte-materialify'
-
 	import { onMount } from 'svelte'
-	import { stores } from '@sapper/app'
+	import GlobalStyle from '../components/GlobalStyle.svelte'
 
 	let theme = 'dark'
 
@@ -17,8 +16,8 @@
 	    try {
 	      if (!user) {
 	        console.log('User does not exist')
-	        Cookies.set('token', false)
-	        $session.user = false
+	        Cookies.remove('token')
+	        $session.user = undefined
 	        return
 	      }
 	      const token = await user.getIdToken()
@@ -27,12 +26,18 @@
 	      console.log('User found and session set!')
 	    } catch (e) {
 	      console.log('Something went wrong')
-	      Cookies.set('token', false)
-	      $session.user = false
+	      Cookies.remove('token')
+	      $session.user = undefined
 	      return
 	    }
 	  })
 	})
+
+	export async function logout() {
+	  await auth.signOut()
+	  $session.user = undefined
+	  goto('/')
+	}
 </script>
 
 <style>
@@ -47,11 +52,27 @@
 		overflow: auto;
 		display: flex;
 	}
+
+	#loginlogout {
+		margin-right: 10px;
+	}
 </style>
+
+<GlobalStyle />
 
 <MaterialApp {theme}>
 	<div id="root">
-		<Nav />
+		<nav>
+			<AppBar dense>
+				<span slot="title">Cookbook</span>
+				<div style="flex-grow:1" />
+				<div id="loginlogout">
+					{#if $session.user}
+						<Button active on:click={logout}>Logout</Button>
+					{/if}
+				</div>
+			</AppBar>
+		</nav>
 		<div id="child">
 			<slot />
 		</div>
