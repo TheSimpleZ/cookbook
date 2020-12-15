@@ -3,7 +3,6 @@
 	import { AppBar, Button } from 'svelte-materialify'
 	import { stores, goto } from '@sapper/app'
 	import { MaterialApp } from 'svelte-materialify'
-	import GlobalStyle from '../components/GlobalStyle.svelte'
 
 	let theme = 'dark'
 
@@ -16,7 +15,6 @@
 	}
 </script>
 
-<GlobalStyle />
 
 <MaterialApp {theme}>
 	<div class="min-h-screen flex flex-col">

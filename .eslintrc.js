@@ -18,6 +18,7 @@ module.exports = {
       processor: 'svelte3/svelte3' 
     }
   ],
+  settings: { 'svelte3/ignore-styles': () => true },
   rules: {
     indent: [
       'error',

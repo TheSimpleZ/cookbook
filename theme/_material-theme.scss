@@ -1,0 +1,12 @@
+@use 'svelte-materialify/src/styles/tools/colors' as c;
+
+$material-dark-theme: (
+  'inline-toolbar': #2c2c2c,
+  'inline-toolbar-btn-hover': #373737,
+  'settings-btn': #2c2c2c,
+  'settings-btn-hover': c.material-color('grey', 'lighten-1')
+);
+
+$material-light-theme: (
+  'inline-toolbar': c.material-color('shades', 'white')
+);
