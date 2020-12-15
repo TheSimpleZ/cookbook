@@ -4,10 +4,10 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "run-p start:dev watch:css",
-    "build": "npm run build:css && sapper build --legacy",
+    "build": "npm run build:css && sapper build",
     "watch:css": "postcss static/global.css -o static/index.css -w",
     "build:css": "NODE_ENV=production postcss static/global.css -o static/index.css",
-    "export": "sapper export --legacy",
+    "export": "sapper export",
     "start": "node __sapper__/build",
     "start:dev": "sapper dev",
     "lint": "eslint ./**/*.{js,svelte}",

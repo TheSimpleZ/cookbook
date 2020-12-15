@@ -27,6 +27,7 @@
 
   #editorjs {
     color: var(--theme-text-primary);
+
     .ce-inline-toolbar {
       background-color: var(--theme-inline-toolbar);
       border: 1px solid  var(--theme-divider);
@@ -43,8 +44,26 @@
         color: var(--theme-settings-btn-hover);
       }
     }
+
+    .ce-settings {
+      background-color: var(--theme-inline-toolbar);
+      border: 1px solid  var(--theme-divider);
+
+      &__button {
+        color: var(--theme-text-primary);
+
+        &:hover {
+          background-color: var(--theme-inline-toolbar-btn-hover);
+        }
+      } 
+    }
+
+    .ce-block--selected .ce-block__content {
+      background-color: var(--theme-block-selected);
+    }
   }
 </style>
+
 
 
 <div class="flex flex-1">

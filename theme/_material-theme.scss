@@ -4,7 +4,9 @@ $material-dark-theme: (
   'inline-toolbar': #2c2c2c,
   'inline-toolbar-btn-hover': #373737,
   'settings-btn': #2c2c2c,
-  'settings-btn-hover': c.material-color('grey', 'lighten-1')
+  'settings-btn-hover': c.material-color('grey', 'lighten-1'),
+  'block-selected': #333333,
+
 );
 
 $material-light-theme: (
