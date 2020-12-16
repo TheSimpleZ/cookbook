@@ -1,77 +1,57 @@
 <!-- /* eslint-disable ParseError */ -->
 <script context="module">
-  export async function preload(page, session) {
-    let { user } = session
+  import { collection, preloader } from '../lib/store'
+
+  const recipes = collection('recipes')
+  export async function preload(page, { user }) {
     if (!user) {
-      return this.redirect(302, '/')
+      // return this.redirect(302, '/')
     }
+
+    return preloader(recipes)(page)
+
   }
 </script>
 
 <script>
-  import { onMount } from 'svelte'
   import {
     NavigationDrawer, List, ListItem 
-} from 'svelte-materialify'
+  } from 'svelte-materialify'
 
-  onMount(async () => {
-    const EditorJS = await import('@editorjs/editorjs')
-    new EditorJS.default()
-  })
-</script>
+  import EditorJs from '../components/EditorJs.svelte'
 
-<style lang="scss" global>
-  @use "sass:map";
-  @use 'svelte-materialify/src/styles/theme' as *;
+  let editor
+  let activeIndex = 0
 
-
-  #editorjs {
-    color: var(--theme-text-primary);
-
-    .ce-inline-toolbar {
-      background-color: var(--theme-inline-toolbar);
-      border: 1px solid  var(--theme-divider);
-
-      .ce-inline-tool:hover {
-        background-color: var(--theme-inline-toolbar-btn-hover);
-      }
-    }
-
-    .ce-toolbar__settings-btn {
-      background-color: var(--theme-inline-toolbar);
-
-      &:hover {
-        color: var(--theme-settings-btn-hover);
-      }
-    }
-
-    .ce-settings {
-      background-color: var(--theme-inline-toolbar);
-      border: 1px solid  var(--theme-divider);
-
-      &__button {
-        color: var(--theme-text-primary);
-
-        &:hover {
-          background-color: var(--theme-inline-toolbar-btn-hover);
-        }
-      } 
-    }
-
-    .ce-block--selected .ce-block__content {
-      background-color: var(--theme-block-selected);
+  const editorConfig = {
+    autofocus: true,
+    placeholder: 'Please write your instructions here',
+    /**
+    * onReady callback
+    */
+    onReady: () => {console.log('Editor.js is ready to work!')},
+   
+    /**
+    * onChange callback
+    */
+    onChange: () => {
+      editor.save().then((data) => {
+        const recipe = $recipes[activeIndex]
+        recipe.instructions = data
+        console.log($recipes[activeIndex])
+      })
     }
   }
-</style>
 
-
+</script>
 
 <div class="flex flex-1">
   <NavigationDrawer>
     <List>
-        <ListItem>Recipie 1</ListItem>
-        <ListItem>Recipie 2</ListItem>
+      {#each $recipes as recipe, index}
+        <ListItem active={index === activeIndex} on:click={() => {activeIndex = index}}>{recipe.name}</ListItem>
+      {/each}
     </List>
   </NavigationDrawer>
-  <div class="flex-1" id="editorjs" />
+  <EditorJs class="flex-1" bind:editor={editor} config={editorConfig}/>
 </div>

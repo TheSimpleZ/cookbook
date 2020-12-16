@@ -1,12 +1,26 @@
 @use 'svelte-materialify/src/styles/tools/colors' as c;
 
-$material-dark-theme: (
-  'inline-toolbar': #2c2c2c,
-  'inline-toolbar-btn-hover': #373737,
-  'settings-btn': #2c2c2c,
-  'settings-btn-hover': c.material-color('grey', 'lighten-1'),
-  'block-selected': #333333,
 
+$elevation :(
+  '0': #000000,
+  '1': #1e1e1e,
+  '2': #222222,
+  '3': #252525,
+  '4': #272727,
+  '6': #2c2c2c,
+  '8': #2e2e2e,
+  '12': #333333,
+  '16': #363636,
+  '24': #373737,
+);
+
+
+$material-dark-theme: (
+  'inline-toolbar': map-get($elevation, '6'),
+  'inline-toolbar-btn-hover': map-get($elevation, '24'),
+  'settings-btn': map-get($elevation, '6'),
+  'settings-btn-hover': c.material-color('grey', 'lighten-1'),
+  'block-selected': map-get($elevation, '12'),
 );
 
 $material-light-theme: (
