@@ -53,6 +53,11 @@
     .ce-block--selected .ce-block__content {
       background-color: var(--theme-block-selected);
     }
+
+    .ce-block__content,
+    .ce-toolbar__content {
+        max-width: 900px;
+    }
   }
 </style>
 
