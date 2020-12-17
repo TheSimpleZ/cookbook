@@ -10,7 +10,14 @@ export async function preload(page, { user }) {
   
   let recipes = collection('recipes').where(`roles.${user.id}`, '==', 'owner').limit(1)
   
-  return recipes.preload((data) => {
+  return recipes.preload(async (data) => {
+    if(!data || data.length === 0) {
+      data[0] = await recipes.add({
+        roles: { [user.id]: 'owner' },
+        name: 'Untitled recipe',
+      })
+    }
+
     this.redirect(302, `/recipes/${data[0].id}`)
   })
 }
