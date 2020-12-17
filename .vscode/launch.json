@@ -17,7 +17,7 @@
       ],
       "type": "pwa-node",
       "outFiles": [
-        "${workspaceFolder}/**/*.js",
+        "${workspaceFolder}/__sapper__/**/*.js",
         "!**/node_modules/**"
       ]
     },
