@@ -19,22 +19,31 @@
 	
 	onMount(async () => {
 	  auth.onIdTokenChanged(async (user) => {
-	    const userCookie = 'user'
+	    const userId = 'userId'
+	    const userToken = 'userToken'
+	    const userKeys = [userId, userToken]
+			
+	    const clearUserData = () => {
+	      for (let key of userKeys) {
+	        Cookies.remove(key)
+	        $session[key] = undefined
+	      }
+	    }
 	    try {
 	      if (!user) {
 	        console.log('User does not exist')
-	        Cookies.remove(userCookie)
-	        $session.user = undefined
+	        clearUserData()
 	        return
 	      }
 	      const token = await user.getIdToken()
-	      $session.user = { id: user.uid, token }
-	      Cookies.set(userCookie, $session.user)
+	      $session.userId = user.uid
+	      $session.userToken = token
+	      Cookies.set(userId, $session.userId)
+	      Cookies.set(userToken, $session.userToken)
 	      console.log('User found and session set!')
 	    } catch (e) {
 	      console.log('Something went wrong')
-	      Cookies.remove(userCookie)
-	      $session.user = undefined
+	      clearUserData()
 	      return
 	    }
 	  })
@@ -49,9 +58,9 @@
 				<span slot="title">Cookbook</span>
 				<div style="flex-grow:1" />
 				<div class="mr-4">
-					{#if $session.user}
+					<!-- {#if $session.user} -->
 						<Button active on:click={logout}>Logout</Button>
-					{/if}
+					<!-- {/if} -->
 				</div>
 			</AppBar>
 		</nav>

@@ -1,12 +1,11 @@
 <script context="module">
   import { collection } from '../../lib/store'
-  import { auth } from '../../lib/firebase'
 
   export async function preload(page, { user }) {
     if (!user) {
       // return this.redirect(302, '/')
     }
-    let recipes = collection('recipes').where(`roles.${auth.currentUser?.uid}`, '==', 'owner')
+    let recipes = collection('recipes').where(`roles.${user.id}`, '==', 'owner')
 
     return recipes.preload()
   }
@@ -20,15 +19,15 @@
 
 
   export let data
-  const { page } = stores()
-  const recipes = collection('recipes', undefined, data).where(`roles.${auth.currentUser?.uid}`, '==', 'owner')
+  const { page, session } = stores()
+  const recipes = collection('recipes', undefined, data).where(`roles.${$session.user.id}`, '==', 'owner')
 
 
   let currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)
 
   function createNewRecipe() {
     recipes.add({
-      roles: { [auth.currentUser.uid]: 'owner' },
+      roles: { [$session.user.id]: 'owner' },
       name: 'Untitled recipe',
     })
   }

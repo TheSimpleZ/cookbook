@@ -14,9 +14,9 @@ export default polka()
     sirv('static', { dev }),
     sapper.middleware({
       session: async (req) => {
-        if(!req.cookies.user)
-          return false
-        return { user: req.cookies.user }
+        if(!req.cookies.userId)
+          return {}
+        return { user: { id:req.cookies.userId, token: req.cookies.userToken } }
       } 
     })
   )

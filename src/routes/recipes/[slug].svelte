@@ -6,8 +6,6 @@
       return this.redirect(302, '/')
     }
 
-    // auth.currentUser.getIdToken().then(token => console.log('got token', token))
-
     const { slug } = page.params
     const recipes = collection('recipes').doc(slug)
     return recipes.preload() 
@@ -31,11 +29,16 @@
   let editor
   let autosave = true
 
-
+  // Rerender recipe when page changes
   $: {
-    if(editor && $page.params.slug != $currentRecipe.id ) {
-      autosave = false
-      editor.blocks.render($currentRecipe.instructions || { blocks: [] }).then(() => {autosave = true})
+    if(editor && $page.params.slug != $currentRecipe.id) {
+      if($currentRecipe?.instructions?.blocks?.length > 0){
+        autosave = false
+        editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
+      }
+      else{
+        editor.blocks.clear()
+      } 
     }
   }
 
