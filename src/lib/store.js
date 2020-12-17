@@ -33,7 +33,7 @@ function throttle(fn, ...delays) {
   }
 }
 
-export function collection(ref, query) {
+export function collection(ref, query, initialData = []) {
   // If ref was passed as a string then
   // treat it as a collection path.
   if (typeof ref === 'string')
@@ -54,12 +54,13 @@ export function collection(ref, query) {
    * Finally we also add a delete method to every document,
    * for complete crud control.
    */
-  const store = readable([], set => {
+  const store = readable(initialData, set => {
     const unsubscribe = query.onSnapshot(
-      snapshot => set(snapshot.docs.map(
-        doc => {
+      snapshot => {
+
+        function proxyMapper(doc) {
           const update = throttle(target => {
-            const data = { ...target, updated: new Date }
+            const data = { ...target, updated: Date.UTC() }
 
             delete data.id
 
@@ -76,10 +77,16 @@ export function collection(ref, query) {
               Reflect.set(...arguments)
               update(target)
               return true
-            } 
+            }
           })
         }
-      ))
+
+        if(!snapshot.docs) {
+          return set(proxyMapper(snapshot))
+        }
+
+        return set(snapshot.docs.map(proxyMapper))
+      }
     )
 
     return () => unsubscribe()
@@ -88,6 +95,17 @@ export function collection(ref, query) {
   // We also add an `add` method to our store,
   // which forwards the call to the firestore collection reference.
   store.add = doc => ref.add({ created: new Date, ...doc })
+
+  // Used to preload data in sapper
+  store.preload = async (returnValueBuilder) =>{ 
+    const data = await query.get()
+
+    if(!data.docs && typeof window === 'undefined') {
+      return { id: data.id, data: data.data() }
+    }
+    const output = data.docs?.map(d => ({ id: d.id, ...d.data() }))
+    return returnValueBuilder ? returnValueBuilder(output) : { data: output }
+  }
 
   /**
    * Finally we wrap the entire store in another proxy.
@@ -106,16 +124,9 @@ export function collection(ref, query) {
         return function() {
           const newQuery = queryFunc(...arguments)
 
-          return collection(ref, newQuery)
+          return collection(ref, newQuery, initialData)
         }
       }
     } 
   })
 }
-
-export const preloader = store => ({ params }) => {
-  return new Promise(
-    resolve => store.subscribe(
-      data => data.length && resolve(params)
-    )
-  )}

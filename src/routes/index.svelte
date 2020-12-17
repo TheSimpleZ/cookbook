@@ -1,9 +1,19 @@
 <script context="module">
-  export async function preload(_, { user }) {
-    if (user) {
-      return this.redirect(302, '/recipes')
-    }
-  }
+
+import { collection } from '../lib/store'
+
+export async function preload(page, { user }) {
+  // if (!user) {
+  //   return 
+  // }
+
+  const recipes = collection('recipes').limit(1)
+
+  return recipes.preload((data) => {
+    this.redirect(302, `/recipes/${data[0].id}`)
+  })
+}
+  
 </script>
 
 <script>
