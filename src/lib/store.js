@@ -103,7 +103,7 @@ export function collection(ref, query, initialData = []) {
   // Used to preload data in sapper
   store.preload = async (returnValueBuilder = data => ({ data })) =>{ 
     const data = await query.get()
-    const output = data.docs?.map(flattenData) ?? flattenData(data)
+    const output = data.docs ? data.docs.map(flattenData) : flattenData(data)
     return returnValueBuilder(output)
   }
 

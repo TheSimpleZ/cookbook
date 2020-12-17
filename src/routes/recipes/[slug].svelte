@@ -32,7 +32,10 @@
   // Rerender recipe when page changes
   $: {
     if(editor && $page.params.slug != $currentRecipe.id) {
-      if($currentRecipe?.instructions?.blocks?.length > 0){
+      if($currentRecipe.instructions 
+        && $currentRecipe.instructions.blocks 
+        && $currentRecipe.instructions.blocks.length > 0)
+      {
         autosave = false
         editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
       }
@@ -63,7 +66,7 @@
 
 
   <div class="flex flex-column flex-1">
-    <h3>{$currentRecipe?.name}</h3>
+    <h3>{$currentRecipe.name}</h3>
     <EditorJs class="flex-1" bind:editor config={editorConfig}/>
   </div>
 

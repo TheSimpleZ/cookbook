@@ -3,7 +3,7 @@
 import { collection } from '../lib/store'
 
 export async function preload(page, { user }) {
-  if (!user?.id) {
+  if (!(user && user.id)) {
     return 
   }
 

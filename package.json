@@ -2,6 +2,9 @@
   "name": "cookbook",
   "description": "Recipe manager app",
   "version": "0.0.1",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "dev": "run-p start:dev watch:css",
     "build": "npm run build:css && sapper build",
