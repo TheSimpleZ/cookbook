@@ -3,8 +3,10 @@
 
   export async function preload(page, { user }) {
     if (!user) {
-      // return this.redirect(302, '/')
+      return this.redirect(302, '/')
     }
+
+    // auth.currentUser.getIdToken().then(token => console.log('got token', token))
 
     const { slug } = page.params
     const recipes = collection('recipes').doc(slug)
@@ -33,7 +35,7 @@
   $: {
     if(editor && $page.params.slug != $currentRecipe.id ) {
       autosave = false
-      editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
+      editor.blocks.render($currentRecipe.instructions || { blocks: [] }).then(() => {autosave = true})
     }
   }
 

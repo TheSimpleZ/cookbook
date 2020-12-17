@@ -1,11 +1,12 @@
 <script context="module">
   import { collection } from '../../lib/store'
+  import { auth } from '../../lib/firebase'
 
   export async function preload(page, { user }) {
     if (!user) {
       // return this.redirect(302, '/')
     }
-    let recipes = collection('recipes')
+    let recipes = collection('recipes').where(`roles.${auth.currentUser?.uid}`, '==', 'owner')
 
     return recipes.preload()
   }
@@ -15,20 +16,18 @@
   import {
     NavigationDrawer, ListItemGroup, ListItem, Button, List
   } from 'svelte-materialify'
-  import { auth } from '../../lib/firebase'
   import { stores } from '@sapper/app'
 
 
   export let data
   const { page } = stores()
-  const recipes = collection('recipes', undefined, data)
+  const recipes = collection('recipes', undefined, data).where(`roles.${auth.currentUser?.uid}`, '==', 'owner')
 
 
   let currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)
 
   function createNewRecipe() {
     recipes.add({
-      author_id: auth.currentUser.uid,
       roles: { [auth.currentUser.uid]: 'owner' },
       name: 'Untitled recipe',
     })

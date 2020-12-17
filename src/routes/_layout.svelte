@@ -3,6 +3,9 @@
 	import { AppBar, Button } from 'svelte-materialify'
 	import { stores, goto } from '@sapper/app'
 	import { MaterialApp } from 'svelte-materialify'
+	import { onMount } from 'svelte'
+
+	import Cookies from 'js-cookie'
 
 	let theme = 'dark'
 
@@ -13,6 +16,27 @@
 	  $session.user = undefined
 	  goto('/')
 	}
+	
+	onMount(async () => {
+	  auth.onIdTokenChanged(async (user) => {
+    try {
+      if (!user) {
+        console.log('User does not exist')
+        Cookies.remove('token')
+        $session.user = undefined
+        return
+      }
+      const token = await user.getIdToken()
+      $session.user = token
+      Cookies.set('token', token)
+      console.log('User found and session set!')
+    } catch (e) {
+      console.log('Something went wrong')
+      Cookies.remove('token')
+      $session.user = undefined
+      return
+	    }})
+	})
 </script>
 
 

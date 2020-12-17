@@ -39,8 +39,9 @@ const flattenData = d => ({ id: d.id, ...d.data() })
 export function collection(ref, query, initialData = []) {
   // If ref was passed as a string then
   // treat it as a collection path.
-  if (typeof ref === 'string')
+  if (typeof ref === 'string') {
     ref = db.collection(ref)
+  }
 
   // If no query was given then the collection
   // reference can function as a query too.
@@ -63,7 +64,7 @@ export function collection(ref, query, initialData = []) {
 
         function proxyMapper(doc) {
           const update = throttle(target => {
-            const data = { ...target, updated: Date.UTC() }
+            const data = target
 
             delete data.id
 
@@ -97,7 +98,7 @@ export function collection(ref, query, initialData = []) {
 
   // We also add an `add` method to our store,
   // which forwards the call to the firestore collection reference.
-  store.add = doc => ref.add({ created: new Date, ...doc })
+  store.add = doc => ref.add(doc)
 
   // Used to preload data in sapper
   store.preload = async (returnValueBuilder = data => ({ data })) =>{ 

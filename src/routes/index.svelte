@@ -1,13 +1,14 @@
 <script context="module">
 
 import { collection } from '../lib/store'
+import { auth } from '../lib/firebase'
 
 export async function preload(page, { user }) {
-  // if (!user) {
-  //   return 
-  // }
+  if (!user) {
+    return 
+  }
 
-  const recipes = collection('recipes').limit(1)
+  let recipes = collection('recipes').where(`roles.${auth.currentUser?.uid}`, '==', 'owner').limit(1)
 
   return recipes.preload((data) => {
     this.redirect(302, `/recipes/${data[0].id}`)
