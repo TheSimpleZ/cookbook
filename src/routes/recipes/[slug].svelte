@@ -8,40 +8,47 @@
 
     const { slug } = page.params
     const recipes = collection('recipes').doc(slug)
-    const data = await recipes.preload()
-    return data 
+    return recipes.preload() 
   }
 </script>
 
 <script>
   import EditorJs from '../../components/EditorJs.svelte'
   import { stores } from '@sapper/app'
+  import { readable } from 'svelte/store'
+
 
   const { page } = stores()
-  const { slug } = $page.params
 
   export let data
 
-
-
-
-  const currentRecipe = collection('recipes', undefined, data).doc(slug)
+  let currentRecipe = readable(data)
+  $: currentRecipe = collection('recipes', undefined, data).doc($page.params.slug)
 
   
   let editor
+  let autosave = true
+
+
+  $: {
+    if(editor && $page.params.slug != $currentRecipe.id ) {
+      autosave = false
+      editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
+    }
+  }
 
   const editorConfig = {
     autofocus: true,
     placeholder: 'Please write your instructions here',
-
-    onReady: () => {console.log('Editor.js is ready to work!')},
+    holder: 'editorjs',
 
     data: $currentRecipe.instructions,
 
     onChange: () => {
-      editor.save().then((data) => {
-        $currentRecipe.instructions = data
-      })
+      if(autosave)
+        editor.save().then((data) => {
+          $currentRecipe.instructions = data
+        })
     }
   }
 

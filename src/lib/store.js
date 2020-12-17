@@ -33,6 +33,9 @@ function throttle(fn, ...delays) {
   }
 }
 
+const flattenData = d => ({ id: d.id, ...d.data() })
+
+
 export function collection(ref, query, initialData = []) {
   // If ref was passed as a string then
   // treat it as a collection path.
@@ -67,7 +70,7 @@ export function collection(ref, query, initialData = []) {
             doc.ref.update(data)
           }, 100, 500)
 
-          return new Proxy({ id: doc.id, ...doc.data() }, {
+          return new Proxy(flattenData(doc), {
             get(_, prop) {
               return prop === 'delete'
                 ? doc.ref.delete.bind(doc.ref)
@@ -97,14 +100,12 @@ export function collection(ref, query, initialData = []) {
   store.add = doc => ref.add({ created: new Date, ...doc })
 
   // Used to preload data in sapper
-  store.preload = async (returnValueBuilder) =>{ 
+  store.preload = async (returnValueBuilder = data => ({ data })) =>{ 
     const data = await query.get()
 
-    if(!data.docs && typeof window === 'undefined') {
-      return { id: data.id, data: data.data() }
-    }
-    const output = data.docs?.map(d => ({ id: d.id, ...d.data() }))
-    return returnValueBuilder ? returnValueBuilder(output) : { data: output }
+    const output = data.docs?.map(flattenData) ?? flattenData(data)
+
+    return returnValueBuilder(output)
   }
 
   /**

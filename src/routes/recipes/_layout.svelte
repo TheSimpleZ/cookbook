@@ -5,7 +5,7 @@
     if (!user) {
       // return this.redirect(302, '/')
     }
-    const recipes = collection('recipes')
+    let recipes = collection('recipes')
 
     return recipes.preload()
   }
@@ -13,20 +13,18 @@
 
 <script>
   import {
-    NavigationDrawer, ListItemGroup, ListItem, Button
+    NavigationDrawer, ListItemGroup, ListItem, Button, List
   } from 'svelte-materialify'
   import { auth } from '../../lib/firebase'
-  import { goto } from '@sapper/app'
+  import { stores } from '@sapper/app'
+
 
   export let data
-  
+  const { page } = stores()
   const recipes = collection('recipes', undefined, data)
- 
-  let currentRecipeIndex = 0
-  let currentRecipe = $recipes[currentRecipeIndex]
-  $: currentRecipe = $recipes[currentRecipeIndex]
 
-  
+
+  let currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)
 
   function createNewRecipe() {
     recipes.add({
@@ -35,17 +33,17 @@
       name: 'Untitled recipe',
     })
   }
-
-
 </script>
 
 <div class="flex flex-1">
   <NavigationDrawer>
-    <ListItemGroup mandatory bind:value={currentRecipeIndex}>
-      {#each $recipes as recipe}
-      <ListItem on:click={() => goto(`/recipes/${recipe.id}`)}>{recipe.name}</ListItem>
-      {/each}
-    </ListItemGroup>
+    <List nav>
+      <ListItemGroup mandatory bind:value={currentRecipeIndex}>
+        {#each $recipes as recipe}
+        <a rel=prefetch href={`/recipes/${recipe.id}`}><ListItem link>{recipe.name}</ListItem></a>
+        {/each}
+      </ListItemGroup>
+    </List>
     <span slot="append" class="pa-2">
       <Button block on:click={createNewRecipe}>New recipe</Button>
     </span>

@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch via NPM",
+      "name": "Server",
       "request": "launch",
       "runtimeArgs": [
         "run-script",
@@ -15,14 +15,24 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "type": "pwa-node"
+      "type": "pwa-node",
+      "outFiles": [
+        "${workspaceFolder}/**/*.js",
+        "!**/node_modules/**"
+      ]
     },
     {
-      "name": "Launch Chrome",
+      "name": "Browser",
       "request": "launch",
       "type": "pwa-chrome",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/src"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Server/Browser",
+      "configurations": ["Server", "Browser"],
     }
   ]
 }
