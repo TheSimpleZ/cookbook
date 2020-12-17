@@ -23,7 +23,7 @@
   export let data
 
   let currentRecipe = readable(data)
-  $: currentRecipe = collection('recipes', undefined, data).doc($page.params.slug)
+  $: currentRecipe = collection('recipes', data).doc($page.params.slug)
 
   
   let editor

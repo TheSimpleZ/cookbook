@@ -2,12 +2,11 @@
   import { collection } from '../../lib/store'
 
   export async function preload(page, { user }) {
-    if (!user) {
-      // return this.redirect(302, '/')
-    }
-    let recipes = collection('recipes').where(`roles.${user.id}`, '==', 'owner')
+    if (!user.id) {
+      return this.redirect(302, '/')
+    }  
 
-    return recipes.preload()
+    return collection('recipes').assumeRole(user.id).preload()
   }
 </script>
 
@@ -20,7 +19,7 @@
 
   export let data
   const { page, session } = stores()
-  const recipes = collection('recipes', undefined, data).where(`roles.${$session.user.id}`, '==', 'owner')
+  const recipes = collection('recipes', data).assumeRole($session.user.id)
 
 
   let currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)
@@ -36,7 +35,7 @@
 <div class="flex flex-1">
   <NavigationDrawer>
     <List nav>
-      <ListItemGroup mandatory bind:value={currentRecipeIndex}>
+      <ListItemGroup mandatory value={currentRecipeIndex}>
         {#each $recipes as recipe}
         <a rel=prefetch href={`/recipes/${recipe.id}`}><ListItem link>{recipe.name}</ListItem></a>
         {/each}

@@ -35,8 +35,7 @@ function throttle(fn, ...delays) {
 
 const flattenData = d => ({ id: d.id, ...d.data() })
 
-
-export function collection(ref, query, initialData = []) {
+export function collection(ref, initialData = [], query) {
   // If ref was passed as a string then
   // treat it as a collection path.
   if (typeof ref === 'string') {
@@ -107,6 +106,8 @@ export function collection(ref, query, initialData = []) {
     return returnValueBuilder(output)
   }
 
+  // A helper method to only access documents belonging to current user
+  store.assumeRole = (userId, role='owner', path='roles.') => collection(ref, initialData, query.where(`${path}${userId}`, '==', role))
   /**
    * Finally we wrap the entire store in another proxy.
    * The purpose of this proxy is that you can build queries with the store.
@@ -124,7 +125,7 @@ export function collection(ref, query, initialData = []) {
         return function() {
           const newQuery = queryFunc(...arguments)
 
-          return collection(ref, newQuery, initialData)
+          return collection(ref, initialData, newQuery)
         }
       }
     } 
