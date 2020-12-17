@@ -12,7 +12,13 @@ export default polka()
   .use(
     compression({ threshold: 0 }),
     sirv('static', { dev }),
-    sapper.middleware({ session: async (req) => ({ user: req.cookies.token || false }) })
+    sapper.middleware({
+      session: async (req) => {
+        if(!req.cookies.user)
+          return false
+        return { user: req.cookies.user }
+      } 
+    })
   )
   .listen(PORT, err => {
     if (err) console.log('error', err)

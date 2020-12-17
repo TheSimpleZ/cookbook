@@ -19,23 +19,25 @@
 	
 	onMount(async () => {
 	  auth.onIdTokenChanged(async (user) => {
-    try {
-      if (!user) {
-        console.log('User does not exist')
-        Cookies.remove('token')
-        $session.user = undefined
-        return
-      }
-      const token = await user.getIdToken()
-      $session.user = token
-      Cookies.set('token', token)
-      console.log('User found and session set!')
-    } catch (e) {
-      console.log('Something went wrong')
-      Cookies.remove('token')
-      $session.user = undefined
-      return
-	    }})
+	    const userCookie = 'user'
+	    try {
+	      if (!user) {
+	        console.log('User does not exist')
+	        Cookies.remove(userCookie)
+	        $session.user = undefined
+	        return
+	      }
+	      const token = await user.getIdToken()
+	      $session.user = { id: user.uid, token }
+	      Cookies.set(userCookie, $session.user)
+	      console.log('User found and session set!')
+	    } catch (e) {
+	      console.log('Something went wrong')
+	      Cookies.remove(userCookie)
+	      $session.user = undefined
+	      return
+	    }
+	  })
 	})
 </script>
 
