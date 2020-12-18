@@ -78,6 +78,7 @@
     const list = await import('@editorjs/list')
     const image = await import('@editorjs/image')
     const underline = await import('@editorjs/underline')
+    const marker = await import('@editorjs/marker')
 
     editorConfig.tools = {
       list: {
@@ -85,7 +86,10 @@
         inlineToolbar: true
       },
       image: { class: image.default },
-      unerline: underline.default
+      unerline: underline.default,
+      marker: {
+        class: marker.default
+      }
     }
   })
 </script>

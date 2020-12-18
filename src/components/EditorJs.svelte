@@ -63,6 +63,9 @@
     .ce-toolbar__plus, .ce-toolbox__button {
         color: var(--theme-text-secondary);
     }
+    .cdx-button{
+      background-color: var(--theme-block-selected);
+    }
   }
 </style>
 
