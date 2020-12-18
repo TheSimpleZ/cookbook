@@ -1,37 +1,7 @@
 import { db } from './firebase'
 import { readable } from 'svelte/store'
 
-function throttle(fn, ...delays) {
-  let t1, t2, activeDelay = 0
-
-  return function() {
-    if (t2) {
-      clearTimeout(t2)
-      t2 = undefined
-    }
-
-    if (t1) {
-      return
-    }
-
-    t1 = setTimeout(() => {
-      fn(...arguments)
-      t1 = undefined
-
-      // Increment the active delay each time
-      // and then stick with the last one.
-      activeDelay = Math.min(++activeDelay, delays.length - 1)
-
-      // Set a 2nd `Timeout` that resets the
-      // active delay back to the first one.
-      t2 = setTimeout(() => {
-        activeDelay = 0
-        t2 = undefined
-      }, delays[activeDelay])
-
-    }, delays[activeDelay])
-  }
-}
+import throttle from 'lodash.throttle'
 
 const flattenData = d => ({ id: d.id, ...d.data() })
 
@@ -68,7 +38,7 @@ export function collection(ref, initialData = [], query) {
             delete data.id
 
             doc.ref.update(data)
-          }, 100, 500)
+          }, 100, { leading: true, trailing: false })
 
           return new Proxy(flattenData(doc), {
             get(_, prop) {
