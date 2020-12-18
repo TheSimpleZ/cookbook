@@ -1,7 +1,7 @@
 import { db } from './firebase'
 import { readable } from 'svelte/store'
 
-import { throttle } from 'lodash.throttle'
+import throttle from 'lodash.throttle'
 
 const flattenData = d => ({ id: d.id, ...d.data() })
 
