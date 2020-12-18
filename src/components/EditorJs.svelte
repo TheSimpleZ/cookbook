@@ -10,6 +10,7 @@
     const EditorJS = await import('@editorjs/editorjs')
     editor = new EditorJS.default(config)
   })
+
 </script>
 
 <style lang="scss" global>
@@ -41,7 +42,7 @@
       background-color: var(--theme-inline-toolbar);
       border: 1px solid  var(--theme-dividers);
 
-      &__button {
+      &__button, .cdx-settings-button {
         color: var(--theme-text-primary);
 
         &:hover {

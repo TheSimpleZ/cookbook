@@ -17,6 +17,7 @@
   import { stores } from '@sapper/app'
   import { readable } from 'svelte/store'
   import throttle from 'lodash.throttle'
+  import { onMount } from 'svelte'
 
   const { page } = stores()
 
@@ -54,9 +55,6 @@
         autosave = false
         editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
       }
-      else{
-        editor.blocks.clear()
-      } 
     }
   }
 
@@ -74,6 +72,20 @@
   }
   
 
+  
+  
+  onMount(async () => {
+    const list = await import('@editorjs/list')
+    const image = await import('@editorjs/image')
+
+    editorConfig.tools = {
+      list: {
+        class: list.default,
+        inlineToolbar: true
+      },
+      image :{ class: image.default }
+    }
+  })
 </script>
 
 <style lang="scss">
