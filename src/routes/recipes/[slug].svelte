@@ -77,13 +77,15 @@
   onMount(async () => {
     const list = await import('@editorjs/list')
     const image = await import('@editorjs/image')
+    const underline = await import('@editorjs/underline')
 
     editorConfig.tools = {
       list: {
         class: list.default,
         inlineToolbar: true
       },
-      image :{ class: image.default }
+      image: { class: image.default },
+      unerline: underline.default
     }
   })
 </script>
