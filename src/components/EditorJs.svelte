@@ -60,7 +60,7 @@
     }
 
     .ce-toolbar__plus, .ce-toolbox__button {
-        color: #8e8e8e;
+        color: var(--theme-text-secondary);
     }
   }
 </style>
