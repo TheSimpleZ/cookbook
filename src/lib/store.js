@@ -1,22 +1,18 @@
 import { db } from './firebase'
 import { readable } from 'svelte/store'
 
-import throttle from 'p-throttle'
-
 const flattenData = d => ({ id: d.id, ...d.data() })
 
 function proxyMapper(doc) {
-  const update = throttle(({ id, ...data }) => doc.ref.update(data), 3, 100)
-
   return new Proxy(flattenData(doc), {
     get(_, prop) {
       return prop === 'delete'
         ? doc.ref.delete.bind(doc.ref)
         : Reflect.get(...arguments)
     },
-    set(target) {
+    set({ id, ...data }) {
       Reflect.set(...arguments)
-      update(target)
+      doc.ref.update(data)
       return true
     }
   })

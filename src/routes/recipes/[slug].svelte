@@ -16,7 +16,7 @@
   import EditorJs from '../../components/EditorJs.svelte'
   import { stores } from '@sapper/app'
   import { readable } from 'svelte/store'
-
+  import throttle from 'lodash.throttle'
 
   const { page } = stores()
 
@@ -28,6 +28,16 @@
   
   let editor
   let autosave = true
+  let textContent = $currentRecipe.name
+
+  const saveName = throttle(() => {
+    $currentRecipe.name = textContent
+  }, 300)
+  
+  const saveInstructions = throttle((data) => {
+    $currentRecipe.instructions = data
+  }, 300)
+
 
   // Rerender recipe when page changes
   $: {
@@ -37,6 +47,7 @@
         && $currentRecipe.instructions.blocks.length > 0)
       {
         autosave = false
+        textContent = $currentRecipe.name
         editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
       }
       else{
@@ -54,19 +65,16 @@
 
     onChange: () => {
       if(autosave)
-        editor.save().then((data) => {
-          $currentRecipe.instructions = data
-        })
+        editor.save().then(saveInstructions)
     }
   }
-
+  
 
 </script>
 
 
-
   <div class="flex flex-column flex-1">
-    <h3 contenteditable bind:textContent={$currentRecipe.name} class="m-auto p-5 outline-none focus:underline" style="width: fit-content"></h3>
+    <h3 contenteditable bind:textContent on:input={saveName} class="mx-auto my-5 outline-none focus:underline border-b" style="width: fit-content; min-width: 200px"></h3>
     <EditorJs class="flex-1" bind:editor config={editorConfig}/>
   </div>
 
