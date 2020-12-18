@@ -10,7 +10,7 @@
 
     const ui = new fbui.auth.AuthUI(auth)
 
-    var uiConfig = {
+    var uiConfig = { 
       callbacks: {
         // User successfully signed in.
         // Return type determines whether we continue the redirect automatically

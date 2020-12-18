@@ -32,9 +32,7 @@
   // Rerender recipe when page changes
   $: {
     if(editor && $page.params.slug != $currentRecipe.id) {
-      if($currentRecipe.instructions 
-        && $currentRecipe.instructions.blocks 
-        && $currentRecipe.instructions.blocks.length > 0)
+      if(($currentRecipe.instructions.blocks||[]).length > 0)
       {
         autosave = false
         editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
