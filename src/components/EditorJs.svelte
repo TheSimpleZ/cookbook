@@ -22,7 +22,7 @@
 
     .ce-inline-toolbar {
       background-color: var(--theme-inline-toolbar);
-      border: 1px solid  var(--theme-divider);
+      border: 1px solid  var(--theme-dividers);
 
       .ce-inline-tool:hover {
         background-color: var(--theme-inline-toolbar-btn-hover);
@@ -39,7 +39,7 @@
 
     .ce-settings {
       background-color: var(--theme-inline-toolbar);
-      border: 1px solid  var(--theme-divider);
+      border: 1px solid  var(--theme-dividers);
 
       &__button {
         color: var(--theme-text-primary);
@@ -57,6 +57,10 @@
     .ce-block__content,
     .ce-toolbar__content {
         max-width: 900px;
+    }
+
+    .ce-toolbar__plus, .ce-toolbox__button {
+        color: var(--theme-text-secondary);
     }
   }
 </style>
