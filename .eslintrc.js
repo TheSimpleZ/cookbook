@@ -42,6 +42,7 @@ module.exports = {
     'object-curly-spacing': ['error', 'always'],
     'object-curly-newline': ['error', { multiline: true, minProperties: 3 }],
     'quote-props': ['error', 'as-needed'],
-    'no-multi-spaces': 'error'
+    'no-multi-spaces': 'error',
+    'no-unused-vars': ['error', { ignoreRestSiblings: true }]
   }
 }

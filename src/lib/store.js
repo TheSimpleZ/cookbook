@@ -1,9 +1,27 @@
 import { db } from './firebase'
 import { readable } from 'svelte/store'
 
-import throttle from 'lodash.throttle'
+import throttle from 'p-throttle'
 
 const flattenData = d => ({ id: d.id, ...d.data() })
+
+function proxyMapper(doc) {
+  const update = throttle(({ id, ...data }) => doc.ref.update(data), 3, 100)
+
+  return new Proxy(flattenData(doc), {
+    get(_, prop) {
+      return prop === 'delete'
+        ? doc.ref.delete.bind(doc.ref)
+        : Reflect.get(...arguments)
+    },
+    set(target) {
+      Reflect.set(...arguments)
+      update(target)
+      return true
+    }
+  })
+}
+
 
 export function collection(ref, initialData = [], query) {
   // If ref was passed as a string then
@@ -30,30 +48,6 @@ export function collection(ref, initialData = [], query) {
   const store = readable(initialData, set => {
     const unsubscribe = query.onSnapshot(
       snapshot => {
-
-        function proxyMapper(doc) {
-          const update = throttle(target => {
-            const data = target
-
-            delete data.id
-
-            doc.ref.update(data)
-          }, 100, { leading: true, trailing: false })
-
-          return new Proxy(flattenData(doc), {
-            get(_, prop) {
-              return prop === 'delete'
-                ? doc.ref.delete.bind(doc.ref)
-                : Reflect.get(...arguments)
-            },
-            set(target) {
-              Reflect.set(...arguments)
-              update(target)
-              return true
-            }
-          })
-        }
-
         if(!snapshot.docs) {
           return set(proxyMapper(snapshot))
         }
