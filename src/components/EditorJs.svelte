@@ -58,6 +58,10 @@
     .ce-toolbar__content {
         max-width: 900px;
     }
+
+    .ce-toolbar__plus, .ce-toolbox__button {
+        color: #8e8e8e;
+    }
   }
 </style>
 
