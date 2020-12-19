@@ -6,10 +6,14 @@
 
   export let config = undefined
 
+  let EditorJS 
+
   onMount(async () => {
-    const EditorJS = await import('@editorjs/editorjs')
-    editor = new EditorJS.default(config)
+    EditorJS = await import('@editorjs/editorjs')
   })
+
+  $: if(EditorJS && config)
+    editor = new EditorJS.default(config)
 
 </script>
 
