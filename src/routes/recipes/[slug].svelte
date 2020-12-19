@@ -70,7 +70,6 @@
     const underline = await import('@editorjs/underline')
     const recipesStorage = storage.ref('recipes').child($currentRecipe.id)
     async function upload(file) {
-      console.log(file)
       const fileRef = await recipesStorage
         .child(file.name)
         .put(file)
@@ -86,7 +85,6 @@
       autofocus: true,
       placeholder: 'Please write your instructions here',
       holder: 'editorjs',
-
       data: $currentRecipe.instructions,
 
       onChange(api) {
