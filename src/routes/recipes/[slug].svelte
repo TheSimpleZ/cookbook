@@ -18,6 +18,7 @@
   import { readable } from 'svelte/store'
   import throttle from 'lodash.throttle'
   import { onMount } from 'svelte'
+  import { storage } from '../../lib/firebase'
 
   const { page } = stores()
 
@@ -72,24 +73,38 @@
   }
   
 
-  
-  
   onMount(async () => {
     const list = await import('@editorjs/list')
     const image = await import('@editorjs/image')
     const underline = await import('@editorjs/underline')
     const marker = await import('@editorjs/marker')
+    const recipesStorage = storage.ref('recipes').child($currentRecipe.id)
+
+    async function upload(file) {
+      console.log(file)
+      const fileRef = await recipesStorage
+        .child(file.name)
+        .put(file)
+        .then((snapshot) => snapshot.ref)
+      const url = await fileRef.getDownloadURL()
+      console.log(url)
+      return {
+        success: 1,
+        file: { url },
+      }
+    }
 
     editorConfig.tools = {
       list: {
         class: list.default,
-        inlineToolbar: true
+        inlineToolbar: true,
       },
-      image: { class: image.default },
-      unerline: underline.default,
-      marker: {
-        class: marker.default
-      }
+      image: {
+        class: image.default,
+        config: { uploader: { uploadByFile: upload, }, },
+        unerline: underline.default,
+        marker: { class: marker.default },
+      },
     }
   })
 </script>
