@@ -55,7 +55,9 @@
       {
         autosave = false
         editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
-      }
+      } else {
+        editor.blocks.clear()
+      } 
     }
   }
 
