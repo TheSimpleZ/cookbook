@@ -6,10 +6,15 @@
 
   export let config = undefined
 
+  let EditorJS 
+
   onMount(async () => {
-    const EditorJS = await import('@editorjs/editorjs')
-    editor = new EditorJS.default(config)
+    EditorJS = await import('@editorjs/editorjs')
   })
+
+  $: if(EditorJS && config)
+    editor = new EditorJS.default(config)
+
 </script>
 
 <style lang="scss" global>
@@ -41,7 +46,7 @@
       background-color: var(--theme-inline-toolbar);
       border: 1px solid  var(--theme-dividers);
 
-      &__button {
+      &__button, .cdx-settings-button {
         color: var(--theme-text-primary);
 
         &:hover {
@@ -61,6 +66,9 @@
 
     .ce-toolbar__plus, .ce-toolbox__button {
         color: var(--theme-text-secondary);
+    }
+    .cdx-button{
+      background-color: var(--theme-block-selected);
     }
   }
 </style>

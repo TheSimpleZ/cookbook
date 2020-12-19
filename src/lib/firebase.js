@@ -1,6 +1,8 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
+import 'firebase/storage'
+
 
 export const fb = process.browser ? firebase : require('firebase-admin')
 
@@ -30,6 +32,7 @@ const app = fb.initializeApp(firebaseConfig)
 
 export const db = app.firestore()
 export const auth = fb.auth()
+export const storage = fb.storage()
 
 
 if (db.enablePersistence) db.enablePersistence()

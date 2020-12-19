@@ -17,6 +17,8 @@
   import { stores } from '@sapper/app'
   import { readable } from 'svelte/store'
   import throttle from 'lodash.throttle'
+  import { onMount } from 'svelte'
+  import { storage } from '../../lib/firebase'
 
   const { page } = stores()
 
@@ -53,27 +55,56 @@
       {
         autosave = false
         editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
-      }
-      else{
+      } else {
         editor.blocks.clear()
       } 
     }
   }
 
-  const editorConfig = {
-    autofocus: true,
-    placeholder: 'Please write your instructions here',
-    holder: 'editorjs',
-
-    data: $currentRecipe.instructions,
-
-    onChange(api) {
-      if(autosave)
-        api.saver.save().then(saveInstructions)
-    }
-  }
+  let editorConfig
   
 
+  onMount(async () => {
+    const list = await import('@editorjs/list')
+    const image = await import('@editorjs/image')
+    const underline = await import('@editorjs/underline')
+    const recipesStorage = storage.ref('recipes').child($currentRecipe.id)
+    async function upload(file) {
+      const fileRef = await recipesStorage
+        .child(file.name)
+        .put(file)
+        .then((snapshot) => snapshot.ref)
+      const url = await fileRef.getDownloadURL()
+      return {
+        success: 1,
+        file: { url },
+      }
+    }
+
+    editorConfig = {
+      autofocus: true,
+      placeholder: 'Please write your instructions here',
+      holder: 'editorjs',
+      data: $currentRecipe.instructions,
+
+      onChange(api) {
+        if(autosave)
+          api.saver.save().then(saveInstructions)
+      },
+      tools: {
+        list: {
+          class: list.default,
+          inlineToolbar: true,
+        },
+        image: {
+          class: image.default,
+          config: { uploader: { uploadByFile: upload, }, },
+        },
+        unerline: underline.default,
+      }
+    }
+ 
+  })
 </script>
 
 <style lang="scss">
@@ -94,6 +125,7 @@
 
 <div class="flex flex-column flex-1">
   <h3 placeholder="Recipe name" contenteditable bind:textContent on:input={saveName} class="mx-auto my-5 outline-none focus:underline"></h3>
+
   <EditorJs class="flex-1" bind:editor config={editorConfig}/>
 </div>
 
