@@ -50,9 +50,14 @@
 	})
 </script>
 
+<style>
+  .app {
+    height: calc(100vh - 48px);
+  }
+</style>
 
 <MaterialApp {theme}>
-	<div class="min-h-screen flex flex-col">
+	<div class="h-screen flex flex-column overflow-hidden">
 		<nav>
 			<AppBar dense>
 				<span slot="title">Cookbook</span>
@@ -64,7 +69,7 @@
 				</div>
 			</AppBar>
 		</nav>
-		<div class="flex flex-1 overflow-auto">
+		<div class="app">
 			<slot />
 		</div>
 	</div>

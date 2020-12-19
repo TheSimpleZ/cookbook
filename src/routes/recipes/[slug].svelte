@@ -80,7 +80,7 @@
   [contenteditable][placeholder]:empty:before {
     text-decoration: underline;
     content: attr(placeholder);
-    position: absolute;
+    position: relative;
     color: gray;
     background-color: transparent;
   }
