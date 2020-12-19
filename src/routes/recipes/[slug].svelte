@@ -1,14 +1,14 @@
 <script context="module">
   import { collection } from '../../lib/store'
 
-  export async function preload(page, { user }) {
-    if (!user) {
-      return this.redirect(302, '/')
+  export async function preload({ params }, { user }) {
+    const preloaded = await collection('recipes').doc(params.slug).preload()
+
+    if(preloaded.data.roles[user.id] !== 'owner') {
+      return this.redirect(302, '/recipes/access-denied')
     }
 
-    const { slug } = page.params
-    const recipes = collection('recipes').doc(slug)
-    return recipes.preload() 
+    return preloaded
   }
 </script>
 
@@ -27,6 +27,9 @@
 
   
   let editor
+
+  // This variable is needed to prevent the onChange from 
+  // running when we change a recipe. 
   let autosave = true
   let textContent = $currentRecipe.name
 
@@ -42,12 +45,13 @@
   // Rerender recipe when page changes
   $: {
     if(editor && $page.params.slug != $currentRecipe.id) {
+      textContent = $currentRecipe.name
+
       if($currentRecipe.instructions 
         && $currentRecipe.instructions.blocks 
         && $currentRecipe.instructions.blocks.length > 0)
       {
         autosave = false
-        textContent = $currentRecipe.name
         editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
       }
       else{
@@ -63,18 +67,33 @@
 
     data: $currentRecipe.instructions,
 
-    onChange: () => {
+    onChange(api) {
       if(autosave)
-        editor.save().then(saveInstructions)
+        api.saver.save().then(saveInstructions)
     }
   }
   
 
 </script>
 
+<style lang="scss">
+  [contenteditable][placeholder]:empty:before {
+    text-decoration: underline;
+    content: attr(placeholder);
+    position: absolute;
+    color: gray;
+    background-color: transparent;
+  }
 
-  <div class="flex flex-column flex-1">
-    <h3 contenteditable bind:textContent on:input={saveName} class="mx-auto my-5 outline-none focus:underline border-b" style="width: fit-content; min-width: 200px"></h3>
-    <EditorJs class="flex-1" bind:editor config={editorConfig}/>
-  </div>
+  h3 {
+    width: fit-content; 
+    min-width: 200px
+  }
+</style>
+
+
+<div class="flex flex-column flex-1">
+  <h3 placeholder="Recipe name" contenteditable bind:textContent on:input={saveName} class="mx-auto my-5 outline-none focus:underline"></h3>
+  <EditorJs class="flex-1" bind:editor config={editorConfig}/>
+</div>
 

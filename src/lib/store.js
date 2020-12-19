@@ -49,6 +49,9 @@ export function collection(ref, initialData = [], query) {
         }
 
         return set(snapshot.docs.map(proxyMapper))
+      },
+      error => {
+        throw error
       }
     )
 
@@ -67,7 +70,7 @@ export function collection(ref, initialData = [], query) {
   }
 
   // A helper method to only access documents belonging to current user
-  store.assumeRole = (userId, role='owner', path='roles.') => collection(ref, initialData, query.where(`${path}${userId}`, '==', role))
+  store.asRole = (userId, role='owner', path='roles.') => collection(ref, initialData, query.where(`${path}${userId}`, '==', role))
   /**
    * Finally we wrap the entire store in another proxy.
    * The purpose of this proxy is that you can build queries with the store.

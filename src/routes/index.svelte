@@ -8,7 +8,7 @@ export async function preload(page, { user }) {
   }
   
  
-  let recipes = collection('recipes').assumeRole(user.id).limit(1)
+  let recipes = collection('recipes').asRole(user.id).limit(1)
   
   return recipes.preload(async (data) => {
     if(!data || data.length === 0) {

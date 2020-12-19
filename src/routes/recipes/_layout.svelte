@@ -1,13 +1,12 @@
 <script context="module">
   import { collection } from '../../lib/store'
 
-  export async function preload(page, { user }) {
-    if (!user.id) {
-      return this.redirect(302, '/')
-    }  
-
-    return collection('recipes').assumeRole(user.id).preload()
+  export function preload (_, { user }) { 
+    return user.id 
+      ? collection('recipes').asRole(user.id).preload() 
+      : this.redirect(302, '/')
   }
+  
 </script>
 
 <script>
@@ -19,7 +18,7 @@
 
   export let data
   const { page, session } = stores()
-  const recipes = collection('recipes', data).assumeRole($session.user.id)
+  const recipes = collection('recipes', data).asRole($session.user.id)
 
 
   let currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)
@@ -37,7 +36,7 @@
     <List nav>
       <ListItemGroup mandatory value={currentRecipeIndex}>
         {#each $recipes as recipe}
-        <a rel=prefetch href={`/recipes/${recipe.id}`}><ListItem link>{recipe.name}</ListItem></a>
+        <a rel=prefetch href={`/recipes/${recipe.id}`}><ListItem link>{recipe.name || 'Untitled recipe'}</ListItem></a>
         {/each}
       </ListItemGroup>
     </List>
