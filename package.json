@@ -19,6 +19,7 @@
     "lint:fix": "eslint --fix ./**/*.{js,svelte}"
   },
   "dependencies": {
+    "@mdi/js": "^5.8.55",
     "compression": "^1.7.1",
     "cookie-parser": "^1.4.5",
     "firebase-admin": "^9.4.1",

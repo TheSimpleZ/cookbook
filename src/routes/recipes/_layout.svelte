@@ -11,20 +11,41 @@
 
 <script>
   import {
-    NavigationDrawer, ListItemGroup, ListItem, Button, List
+    NavigationDrawer, 
+    ListItemGroup, 
+    ListItem, 
+    Button, 
+    List, 
+    Icon, 
+    Dialog,
+    Card,
+    CardTitle,
+    CardText,
+    CardActions,
   } from 'svelte-materialify'
-  import { stores } from '@sapper/app'
-
+  import { stores, goto } from '@sapper/app'
+  import { mdiDelete } from '@mdi/js'
 
   export let data
   const { page, session } = stores()
   const recipes = collection('recipes', data).asRole($session.user.id)
+  let showDeleteDialog = false
+  let stageForDeletion = null
 
 
   let currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)
+  $: currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)
 
-  function createNewRecipe() {
-    recipes.add({ roles: { [$session.user.id]: 'owner' }, })
+  async function createNewRecipe() {
+    const newRecipe = await recipes.add({ roles: { [$session.user.id]: 'owner' }, })
+    await goto(`/recipes/${newRecipe.id}`)
+  }
+
+  async function deleteRecipe(e, recipe) {
+    e.preventDefault()
+    e.stopPropagation()
+    stageForDeletion = recipe
+    showDeleteDialog = true
   }
 </script>
 
@@ -42,9 +63,18 @@
     </span>
     <div class="flex-1 overflow-y-auto">
       <List nav>
-        <ListItemGroup mandatory value={currentRecipeIndex}>
-          {#each $recipes as recipe}
-          <a rel=prefetch href={`/recipes/${recipe.id}`}><ListItem link>{recipe.name || 'Untitled recipe'}</ListItem></a>
+        <ListItemGroup mandatory bind:value={currentRecipeIndex}>
+          {#each $recipes as recipe, i}
+              <a rel=prefetch href={`/recipes/${recipe.id}`}>
+                <ListItem link>
+                  {recipe.name || 'Untitled recipe'} 
+                  <span slot="append">
+                    <Button icon class="elevation-2" on:click={(e) => deleteRecipe(e, recipe)}>
+                      <Icon path={mdiDelete} />
+                    </Button>
+                  </span>
+                </ListItem>
+              </a>
           {/each}
         </ListItemGroup>
       </List>
@@ -54,3 +84,16 @@
     <slot />
   </div>
 </div>
+
+<Dialog bind:active={showDeleteDialog}>
+  <Card>
+    <CardTitle>Would you like to delete this recipe?</CardTitle>
+    <CardText>
+      If you delete this recipe it will be lost <b>forever</b>
+    </CardText>
+    <CardActions>
+      <Button on:click={() => {showDeleteDialog = false; return stageForDeletion.delete()}} text class="red-text">Yes</Button>
+      <Button on:click={() => {showDeleteDialog = false}} text>No</Button>
+    </CardActions>
+  </Card>
+</Dialog>
