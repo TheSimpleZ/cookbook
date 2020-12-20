@@ -80,8 +80,12 @@
     const image = await import('@editorjs/image')
     const underline = await import('@editorjs/underline')
     const header = await import('@editorjs/header')
+    const marker = await import('@editorjs/marker')
+    const table = await import('@editorjs/table')
     const recipesStorage = storage.ref('recipes').child($currentRecipe.id)
-    async function upload(file) {
+
+
+    async function uploadByFile(file) {
       const fileRef = await recipesStorage
         .child(file.name)
         .put(file)
@@ -110,10 +114,13 @@
         },
         image: {
           class: image.default,
-          config: { uploader: { uploadByFile: upload, }, },
+          config: { uploader: { uploadByFile, }, },
         },
-        unerline: underline.default,
-        header: Header
+        underline: underline.default,
+        header: header.default,
+        table: {
+          class: table.default,
+        }
       }
     }
  
