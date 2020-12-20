@@ -79,6 +79,7 @@
     const list = await import('@editorjs/list')
     const image = await import('@editorjs/image')
     const underline = await import('@editorjs/underline')
+    const header = await import('@editorjs/header')
     const recipesStorage = storage.ref('recipes').child($currentRecipe.id)
     async function upload(file) {
       const fileRef = await recipesStorage
@@ -112,6 +113,7 @@
           config: { uploader: { uploadByFile: upload, }, },
         },
         unerline: underline.default,
+        header: Header
       }
     }
  
