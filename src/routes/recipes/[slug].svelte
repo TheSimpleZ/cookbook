@@ -38,8 +38,19 @@
   const saveName = throttle(() => {
     $currentRecipe.name = textContent
   }, 300)
+
   
   const saveInstructions = throttle((data) => {
+    // If this piece of code is removed the image plugin will replace all 
+    // '&' signs with '&amp;'
+    if(data.blocks) {
+      data.blocks.forEach(block => {
+        if(block.type === 'image' && block.data.file.url){
+          block.data.file.url = block.data.file.url.replace('&amp;', '&')
+        }
+      })
+    }
+   
     $currentRecipe.instructions = data
   }, 300)
 
