@@ -70,6 +70,10 @@
     .cdx-button{
       background-color: var(--theme-block-selected);
     }
+
+    .ce-conversion-toolbar {
+      background-color: var(--theme-inline-toolbar);
+    }
   }
 </style>
 

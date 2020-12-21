@@ -1,130 +1,131 @@
 <script context="module">
-  import { collection } from '../../lib/store'
+  import { collection } from "../../lib/store";
 
   export async function preload({ params }, { user }) {
-    const preloaded = await collection('recipes').doc(params.slug).preload()
+    const preloaded = await collection("recipes").doc(params.slug).preload();
 
-    if(preloaded.data.roles[user.id] !== 'owner') {
-      return this.redirect(302, '/recipes/access-denied')
+    if (preloaded.data.roles[user.id] !== "owner") {
+      return this.redirect(302, "/recipes/access-denied");
     }
 
-    return preloaded
+    return preloaded;
   }
 </script>
 
 <script>
-  import EditorJs from '../../components/EditorJs.svelte'
-  import { stores } from '@sapper/app'
-  import { readable } from 'svelte/store'
-  import throttle from 'lodash.throttle'
-  import { onMount } from 'svelte'
-  import { storage } from '../../lib/firebase'
+  import EditorJs from "../../components/EditorJs.svelte";
+  import { stores } from "@sapper/app";
+  import { readable } from "svelte/store";
+  import throttle from "lodash.throttle";
+  import { onMount } from "svelte";
+  import { storage } from "../../lib/firebase";
+  import { loadTools } from "../../lib/toolmanager";
 
-  const { page } = stores()
+  const { page } = stores();
 
-  export let data
+  export let data;
 
-  let currentRecipe = readable(data)
-  $: currentRecipe = collection('recipes', data).doc($page.params.slug)
+  let currentRecipe = readable(data);
+  $: currentRecipe = collection("recipes", data).doc($page.params.slug);
 
-  
-  let editor
+  let editor;
 
-  // This variable is needed to prevent the onChange from 
-  // running when we change a recipe. 
-  let autosave = true
-  let textContent = $currentRecipe.name
+  // This variable is needed to prevent the onChange from
+  // running when we change a recipe.
+  let autosave = true;
+  let textContent = $currentRecipe.name;
 
   const saveName = throttle(() => {
-    $currentRecipe.name = textContent
-  }, 300)
+    $currentRecipe.name = textContent;
+  }, 300);
 
-  
   const saveInstructions = throttle((data) => {
-    // If this piece of code is removed the image plugin will replace all 
+    // If this piece of code is removed the image plugin will replace all
     // '&' signs with '&amp;'
-    if(data.blocks) {
-      data.blocks.forEach(block => {
-        if(block.type === 'image' && block.data.file.url){
-          block.data.file.url = block.data.file.url.replace('&amp;', '&')
+    if (data.blocks) {
+      data.blocks.forEach((block) => {
+        if (block.type === "image" && block.data.file.url) {
+          block.data.file.url = block.data.file.url.replace("&amp;", "&");
         }
-      })
+      });
     }
-   
-    $currentRecipe.instructions = data
-  }, 300)
 
+    $currentRecipe.instructions = data;
+  }, 300);
 
   // Rerender recipe when page changes
   $: {
-    if(editor && $page.params.slug != $currentRecipe.id) {
-      textContent = $currentRecipe.name
+    if (editor && $page.params.slug != $currentRecipe.id) {
+      textContent = $currentRecipe.name;
 
-      if($currentRecipe.instructions 
-        && $currentRecipe.instructions.blocks 
-        && $currentRecipe.instructions.blocks.length > 0)
-      {
-        autosave = false
-        editor.blocks.render($currentRecipe.instructions).then(() => {autosave = true})
+      if (
+        $currentRecipe.instructions &&
+        $currentRecipe.instructions.blocks &&
+        $currentRecipe.instructions.blocks.length > 0
+      ) {
+        autosave = false;
+        editor.blocks.render($currentRecipe.instructions).then(() => {
+          autosave = true;
+        });
       } else {
-        editor.blocks.clear()
-      } 
+        editor.blocks.clear();
+      }
     }
   }
 
-  let editorConfig
-  
+  let editorConfig;
 
   onMount(async () => {
-    const list = await import('@editorjs/list')
-    const image = await import('@editorjs/image')
-    const underline = await import('@editorjs/underline')
-    const header = await import('@editorjs/header')
-    const marker = await import('@editorjs/marker')
-    const table = await import('@editorjs/table')
-    const recipesStorage = storage.ref('recipes').child($currentRecipe.id)
-
+    const { list, image, underline, header, marker, table } = await loadTools();
+    const recipesStorage = storage.ref("recipes").child($currentRecipe.id);
 
     async function uploadByFile(file) {
       const fileRef = await recipesStorage
         .child(file.name)
         .put(file)
-        .then((snapshot) => snapshot.ref)
-      const url = await fileRef.getDownloadURL()
+        .then((snapshot) => snapshot.ref);
+      const url = await fileRef.getDownloadURL();
       return {
         success: 1,
         file: { url },
-      }
+      };
     }
 
     editorConfig = {
       autofocus: true,
-      placeholder: 'Please write your instructions here',
-      holder: 'editorjs',
+      placeholder: "Please write your instructions here",
+      holder: "editorjs",
       data: $currentRecipe.instructions,
 
       onChange(api) {
-        if(autosave)
-          api.saver.save().then(saveInstructions)
+        if (autosave) api.saver.save().then(saveInstructions);
       },
+
       tools: {
         list: {
-          class: list.default,
+          class: list,
           inlineToolbar: true,
         },
         image: {
-          class: image.default,
-          config: { uploader: { uploadByFile, }, },
+          class: image,
+          config: { uploader: { uploadByFile } },
         },
-        underline: underline.default,
-        header: header.default,
+        underline: underline,
+        header: header,
+        marker: {
+          class: marker,
+        },
         table: {
-          class: table.default,
-        }
-      }
-    }
- 
-  })
+          class: table,
+          inlineToolbar: true,
+          config: {
+            rows: 2,
+            cols: 3,
+          },
+        },
+      },
+    };
+  });
 </script>
 
 <style lang="scss">
@@ -137,15 +138,18 @@
   }
 
   h3 {
-    width: fit-content; 
-    min-width: 200px
+    width: fit-content;
+    min-width: 200px;
   }
 </style>
 
-
 <div class="flex flex-column flex-1">
-  <h3 placeholder="Recipe name" contenteditable bind:textContent on:input={saveName} class="mx-auto my-5 outline-none focus:underline"></h3>
+  <h3
+    placeholder="Recipe name"
+    contenteditable
+    bind:textContent
+    on:input={saveName}
+    class="mx-auto my-5 outline-none focus:underline" />
 
-  <EditorJs class="flex-1" bind:editor config={editorConfig}/>
+  <EditorJs class="flex-1" bind:editor config={editorConfig} />
 </div>
-

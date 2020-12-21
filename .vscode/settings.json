@@ -6,5 +6,7 @@
   "eslint.validate": [
       "javascript",
       "svelte"
-  ]
+  ],
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false
 }
