@@ -32,6 +32,10 @@
       .ce-inline-tool:hover {
         background-color: var(--theme-inline-toolbar-btn-hover);
       }
+
+      &__dropdown:hover {
+        background-color: var(--theme-inline-toolbar-btn-hover);
+      }
     }
 
     .ce-toolbar__settings-btn {
@@ -73,6 +77,17 @@
 
     .ce-conversion-toolbar {
       background-color: var(--theme-inline-toolbar);
+      border: 1px solid  var(--theme-dividers);
+    }
+
+    .ce-conversion-tool {
+      &:hover {
+        background-color: var(--theme-inline-toolbar-btn-hover);
+      }
+
+      &__icon {
+        background-color: var(--theme-surface);
+      }
     }
   }
 </style>
