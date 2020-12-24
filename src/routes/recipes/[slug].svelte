@@ -80,11 +80,11 @@
     const recipesStorage = storage.ref("recipes").child($currentRecipe.id);
 
     async function uploadByFile(file) {
-      const fileRef = await recipesStorage
+      const snapshot = await recipesStorage
         .child(file.name)
         .put(file)
-        .then((snapshot) => snapshot.ref);
-      const url = await fileRef.getDownloadURL();
+
+      const url = await snapshot.ref.getDownloadURL();
       return {
         success: 1,
         file: { url },
