@@ -69,28 +69,31 @@ export function collection(ref, initialData = [], query) {
     return returnValueBuilder(output)
   }
 
-  // A helper method to only access documents belonging to current user
-  store.asRole = (userId, role='owner', path='roles.') => collection(ref, initialData, query.where(`${path}${userId}`, '==', role))
   /**
    * Finally we wrap the entire store in another proxy.
    * The purpose of this proxy is that you can build queries with the store.
    * And that for every additional query method you just get back a new Svelte store.
    */
-  return new Proxy(store, {
+  const storeProxy = new Proxy(store, {
     get(target, prop, receiver) {
       if (prop in target) {
         return Reflect.get(...arguments)
       }
-
+      
       if (prop in query && typeof query[prop] === 'function') {
         const queryFunc = Reflect.get(query, prop, receiver).bind(query)
-
+        
         return function() {
           const newQuery = queryFunc(...arguments)
-
+          
           return collection(ref, initialData, newQuery)
         }
       }
     } 
   })
+
+  // A helper method to only access documents belonging to current user
+  store.asRole = (userId, role='owner', path='roles.') => storeProxy.where(`${path}${userId}`, '==', role)
+  
+  return storeProxy
 }

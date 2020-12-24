@@ -60,7 +60,7 @@
 	<div class="h-screen flex flex-column overflow-hidden">
 		<nav>
 			<AppBar dense>
-				<span slot="title">Cookbook</span>
+				<span slot="title">Kookbook</span>
 				<div style="flex-grow:1" />
 				<div class="mr-4">
 					<!-- {#if $session.user} -->

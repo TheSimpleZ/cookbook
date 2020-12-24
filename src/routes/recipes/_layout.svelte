@@ -10,42 +10,33 @@
 </script>
 
 <script>
-  import {
-    NavigationDrawer, 
-    ListItemGroup, 
-    ListItem, 
-    Button, 
-    List, 
-    Icon, 
-    Dialog,
-    Card,
-    CardTitle,
-    CardText,
-    CardActions,
-  } from 'svelte-materialify'
   import { stores, goto } from '@sapper/app'
   import { mdiDelete } from '@mdi/js'
+  import RecipeList from "../../components/RecipeList.svelte";
+  import { createRecipe } from '../../lib/recipemanager'
+
 
   export let data
   const { page, session } = stores()
   const recipes = collection('recipes', data).asRole($session.user.id)
-  let showDeleteDialog = false
-  let stageForDeletion = null
 
 
   let currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)
   $: currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)
 
   async function createNewRecipe() {
-    const newRecipe = await recipes.add({ roles: { [$session.user.id]: 'owner' }, })
+    const newRecipe = await recipes.add(createRecipe({user: $session.user}))
     await goto(`/recipes/${newRecipe.id}`)
   }
 
-  async function deleteRecipe(e, recipe) {
-    e.preventDefault()
-    e.stopPropagation()
-    stageForDeletion = recipe
-    showDeleteDialog = true
+  async function deleteRecipe(e) {
+    if($recipes.length == 1) {
+      await createNewRecipe();
+    } else {
+      const nextRecipeIndex = (currentRecipeIndex + 1) % ($recipes.length)
+      await goto(`/recipes/${$recipes[nextRecipeIndex].id}`)
+    }
+    await e.detail.recipe.delete()
   }
 </script>
 
@@ -57,43 +48,10 @@
 </style>
 
 <div class="flex flex-1 app">
-  <NavigationDrawer>
-    <span slot="prepend" class="pa-2">
-      <Button block on:click={createNewRecipe}>New recipe</Button>
-    </span>
-    <div class="flex-1 overflow-y-auto">
-      <List nav>
-        <ListItemGroup mandatory bind:value={currentRecipeIndex}>
-          {#each $recipes as recipe, i}
-              <a rel=prefetch href={`/recipes/${recipe.id}`}>
-                <ListItem link>
-                  {recipe.name || 'Untitled recipe'} 
-                  <span slot="append">
-                    <Button icon class="elevation-2" on:click={(e) => deleteRecipe(e, recipe)}>
-                      <Icon path={mdiDelete} />
-                    </Button>
-                  </span>
-                </ListItem>
-              </a>
-          {/each}
-        </ListItemGroup>
-      </List>
-    </div>
-  </NavigationDrawer>
+  <RecipeList on:create={createNewRecipe} on:delete={deleteRecipe} recipes={recipes} bind:selectedRecipeIndex={currentRecipeIndex} />
   <div class="overflow-y-auto flex-1">
     <slot />
   </div>
 </div>
 
-<Dialog bind:active={showDeleteDialog}>
-  <Card>
-    <CardTitle>Would you like to delete this recipe?</CardTitle>
-    <CardText>
-      If you delete this recipe it will be lost <b>forever</b>
-    </CardText>
-    <CardActions>
-      <Button on:click={() => {showDeleteDialog = false; return stageForDeletion.delete()}} text class="red-text">Yes</Button>
-      <Button on:click={() => {showDeleteDialog = false}} text>No</Button>
-    </CardActions>
-  </Card>
-</Dialog>
+

@@ -1,6 +1,7 @@
 <script context="module">
 
 import { collection } from '../lib/store'
+import { createRecipe } from '../lib/recipemanager'
 
 export async function preload(page, { user }) {
   if (!(user && user.id)) {
@@ -12,10 +13,7 @@ export async function preload(page, { user }) {
   
   return recipes.preload(async (data) => {
     if(!data || data.length === 0) {
-      data[0] = await recipes.add({
-        roles: { [user.id]: 'owner' },
-        name: 'Untitled recipe',
-      })
+      data[0] = await recipes.add(createRecipe({ user }))
     }
 
     this.redirect(302, `/recipes/${data[0].id}`)
@@ -33,14 +31,14 @@ export async function preload(page, { user }) {
 </script>
 
 <svelte:head>
-  <title>Cookbook Login</title>
+  <title>Kookbook Login</title>
 </svelte:head>
 
 
 <div class="w-full h-full flex justify-center items-center">
   <Card style="max-width:300px;" {loading} >
     <div class="pl-4 pr-4 pt-3">
-      <span class="text-overline">Welcome to the Cookbook app</span>
+      <span class="text-overline">Welcome to the Kookbook app</span>
       <br />
       <span class="text-h5 mb-2">Login</span>
       <br />
