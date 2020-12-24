@@ -11,7 +11,7 @@
 
 	let theme = 'dark'
 
-const { session } = stores()
+  const { session } = stores()
   
 
 	export async function logout() {

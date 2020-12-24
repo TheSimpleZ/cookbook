@@ -40,12 +40,18 @@
   }, 300);
 
   const saveInstructions = throttle((data) => {
-    // If this piece of code is removed the image plugin will replace all
-    // '&' signs with '&amp;'
     if (data.blocks) {
       data.blocks.forEach((block) => {
+        // If this piece of code is removed the image plugin will replace all
+        // '&' signs with '&amp;'
         if (block.type === "image" && block.data.file.url) {
           block.data.file.url = block.data.file.url.replace("&amp;", "&");
+        }
+
+        // Firestore does not support nested arrays. 
+        // hence we convert the table array to an object
+        if (block.type === "table" && block.data.content) {
+          block.data.content = block.data.content.reduce((acc, val, i) => {acc[i] = val; return acc}, {})
         }
       });
     }
@@ -91,11 +97,23 @@
       };
     }
 
+    
+    // Since we had to convert the nested arrays into objects
+    // we now have to convert it back.
+    const editorData = $currentRecipe.instructions
+    if (editorData.blocks) {
+      editorData.blocks.forEach((block) => {
+        if (block.type === "table" && block.data.content) {
+          block.data.content = Object.values(block.data.content)
+        }
+      });
+    }
+
     editorConfig = {
       autofocus: true,
       placeholder: "Please write your instructions here",
       holder: "editorjs",
-      data: $currentRecipe.instructions,
+      data: editorData,
 
       onChange(api) {
         if (autosave) api.saver.save().then(saveInstructions);
