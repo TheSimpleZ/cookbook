@@ -14,7 +14,8 @@ import {
   CardText,
   CardActions,
   ButtonGroup,
-  ButtonGroupItem
+  ButtonGroupItem,
+  Divider
 } from 'svelte-materialify'
 import { mdiDelete, mdiPlus } from '@mdi/js'
 
@@ -59,6 +60,7 @@ function createNewRecipe() {
       </ButtonGroupItem>
     </ButtonGroup>
   </span>
+  <Divider />
   <div class="flex-1 overflow-y-auto">
     <List nav>
       <ListItemGroup mandatory bind:value={selectedRecipeIndex}>

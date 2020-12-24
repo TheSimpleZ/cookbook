@@ -4,7 +4,7 @@
   export async function preload({ params }, { user }) {
     const preloaded = await collection("recipes").doc(params.slug).preload();
 
-    if (preloaded.data.roles[user.id] !== "owner") {
+    if (preloaded.data.roles[user.uid] !== "owner") {
       return this.redirect(302, "/recipes/access-denied");
     }
 

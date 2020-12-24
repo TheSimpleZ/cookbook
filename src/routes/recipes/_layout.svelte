@@ -2,8 +2,8 @@
   import { collection } from '../../lib/store'
 
   export function preload (_, { user }) { 
-    return user.id 
-      ? collection('recipes').asRole(user.id).preload() 
+    return user.uid 
+      ? collection('recipes').asRole(user.uid).preload() 
       : this.redirect(302, '/')
   }
   
@@ -18,7 +18,7 @@
 
   export let data
   const { page, session } = stores()
-  const recipes = collection('recipes', data).asRole($session.user.id)
+  const recipes = collection('recipes', data).asRole($session.user.uid)
 
 
   let currentRecipeIndex = $recipes.findIndex(e => e.id == $page.params.slug)

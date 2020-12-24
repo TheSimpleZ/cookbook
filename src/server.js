@@ -14,9 +14,11 @@ export default polka()
     sirv('static', { dev }),
     sapper.middleware({
       session: async (req) => {
-        if(!req.cookies.userId)
+        if(!req.cookies.user)
           return {}
-        return { user: { id:req.cookies.userId, token: req.cookies.userToken } }
+
+        const user = JSON.parse(req.cookies.user)
+        return { user }
       } 
     })
   )

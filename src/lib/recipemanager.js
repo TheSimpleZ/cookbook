@@ -1,5 +1,5 @@
 
 
 export function createRecipe({ user }) {
-  return { roles: { [user.id]: 'owner' }, }
+  return { roles: { [user.uid]: 'owner' }, }
 }

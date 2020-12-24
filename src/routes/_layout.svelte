@@ -2,14 +2,17 @@
 	import { auth } from '../lib/firebase'
 	import { AppBar, Button } from 'svelte-materialify'
 	import { stores, goto } from '@sapper/app'
-	import { MaterialApp } from 'svelte-materialify'
+	import {
+  MaterialApp, Avatar, Menu, ListItem, List 
+} from 'svelte-materialify'
 	import { onMount } from 'svelte'
 
 	import Cookies from 'js-cookie'
 
 	let theme = 'dark'
 
-	const { session } = stores()
+const { session } = stores()
+  
 
 	export async function logout() {
 	  await auth.signOut()
@@ -18,28 +21,19 @@
 	}
 	
 	onMount(async () => {
-	  auth.onIdTokenChanged(async (user) => {
-	    const userId = 'userId'
-	    const userToken = 'userToken'
-	    const userKeys = [userId, userToken]
-			
+	  auth.onIdTokenChanged(async (user) => {			
 	    const clearUserData = () => {
-	      for (let key of userKeys) {
-	        Cookies.remove(key)
-	        $session[key] = undefined
-	      }
+      Cookies.remove('user')
+      $session.user = undefined
 	    }
 	    try {
 	      if (!user) {
 	        console.log('User does not exist')
 	        clearUserData()
 	        return
-	      }
-	      const token = await user.getIdToken()
-	      $session.userId = user.uid
-	      $session.userToken = token
-	      Cookies.set(userId, $session.userId)
-	      Cookies.set(userToken, $session.userToken)
+      }
+      $session.user = user
+	      Cookies.set('user', JSON.stringify(user.toJSON()))
 	      console.log('User found and session set!')
 	    } catch (e) {
 	      console.log('Something went wrong')
@@ -63,9 +57,18 @@
 				<span slot="title">Kookbook</span>
 				<div style="flex-grow:1" />
 				<div class="mr-4">
-					<!-- {#if $session.user} -->
-						<Button active on:click={logout}>Logout</Button>
-					<!-- {/if} -->
+					{#if $session.user}
+            <Menu nudgeX="-50" >
+              <div slot="activator">
+                <Button fab>
+                  <Avatar size={40}><img src={$session.user.photoURL} alt="profile" /></Avatar>
+                </Button>
+              </div>
+              <List>
+                <ListItem on:click={logout}>Log out</ListItem>
+              </List>
+            </Menu>
+					{/if}
 				</div>
 			</AppBar>
 		</nav>

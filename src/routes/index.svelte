@@ -4,12 +4,12 @@ import { collection } from '../lib/store'
 import { createRecipe } from '../lib/recipemanager'
 
 export async function preload(page, { user }) {
-  if (!(user && user.id)) {
+  if (!(user && user.uid)) {
     return 
   }
   
  
-  let recipes = collection('recipes').asRole(user.id).limit(1)
+  let recipes = collection('recipes').asRole(user.uid).limit(1)
   
   return recipes.preload(async (data) => {
     if(!data || data.length === 0) {
