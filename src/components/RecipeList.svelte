@@ -18,6 +18,8 @@ import {
   Divider
 } from 'svelte-materialify'
 import { mdiDelete, mdiPlus } from '@mdi/js'
+import 'simplebar'
+import 'simplebar/dist/simplebar.css'
 
 export let recipes = []
 export let selectedRecipeIndex
@@ -47,6 +49,10 @@ function createNewRecipe() {
   :global(.menu-btn) {
     flex-grow: 1 !important;
   }
+
+  :global(.s-navigation-drawer__content) {
+    overflow: hidden;
+  }
 </style>
 
 <NavigationDrawer>
@@ -61,7 +67,7 @@ function createNewRecipe() {
     </ButtonGroup>
   </span>
   <Divider />
-  <div class="flex-1 overflow-y-auto">
+  <div class="flex-1 overflow-y-auto h-full" data-simplebar>
     <List nav>
       <ListItemGroup mandatory bind:value={selectedRecipeIndex}>
         {#each $recipes as recipe, i}

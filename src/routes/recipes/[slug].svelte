@@ -1,122 +1,91 @@
 <script context="module">
-  import { collection } from "../../lib/store";
+  import { collection } from '../../lib/store'
 
   export async function preload({ params }, { user }) {
-    const preloaded = await collection("recipes").doc(params.slug).preload();
+    const preloaded = await collection('recipes').doc(params.slug).preload()
 
-    if (preloaded.data.roles[user.uid] !== "owner") {
-      return this.redirect(302, "/recipes/access-denied");
+    if (preloaded.data.roles[user.uid] !== 'owner') {
+      return this.redirect(302, '/recipes/access-denied')
     }
 
-    return preloaded;
+    return preloaded
   }
 </script>
 
 <script>
-  import EditorJs from "../../components/EditorJs.svelte";
-  import { stores } from "@sapper/app";
-  import { readable } from "svelte/store";
-  import throttle from "lodash.throttle";
-  import { onMount } from "svelte";
-  import { storage } from "../../lib/firebase";
-  import { loadTools } from "../../lib/toolmanager";
+  import EditorJs from '../../components/EditorJs.svelte'
+  import { stores } from '@sapper/app'
+  import { readable } from 'svelte/store'
+  import throttle from 'lodash.throttle'
+  import { onMount } from 'svelte'
+  import { loadTools } from '../../lib/toolmanager'
+  import {
+    transformBlocksToFirebaseFriendly, transformBlocksToOriginal, uploadImage 
+} from '../../lib/recipemanager'
 
-  const { page } = stores();
+  const { page } = stores()
 
-  export let data;
+  export let data
 
-  let currentRecipe = readable(data);
-  $: currentRecipe = collection("recipes", data).doc($page.params.slug);
+  let currentRecipe = readable(data)
+  $: currentRecipe = collection('recipes', data).doc($page.params.slug)
 
-  let editor;
+  let editor
 
   // This variable is needed to prevent the onChange from
   // running when we change a recipe.
-  let autosave = true;
-  let textContent = $currentRecipe.name;
+  let autosave = true
+  let textContent = $currentRecipe.name
 
   const saveName = throttle(() => {
-    $currentRecipe.name = textContent;
-  }, 300);
+    $currentRecipe.name = textContent
+  }, 500)
 
-  const saveInstructions = throttle((data) => {
-    if (data.blocks) {
-      data.blocks.forEach((block) => {
-        // If this piece of code is removed the image plugin will replace all
-        // '&' signs with '&amp;'
-        if (block.type === "image" && block.data.file.url) {
-          block.data.file.url = block.data.file.url.replace("&amp;", "&");
-        }
+  const saveInstructions = throttle(async () => {
+    const data = await editor.save()
+    $currentRecipe.instructions = transformBlocksToFirebaseFriendly(data)
+  }, 500)
 
-        // Firestore does not support nested arrays. 
-        // hence we convert the table array to an object
-        if (block.type === "table" && block.data.content) {
-          block.data.content = block.data.content.reduce((acc, val, i) => {acc[i] = val; return acc}, {})
-        }
-      });
-    }
-
-    $currentRecipe.instructions = data;
-  }, 300);
+  
 
   // Rerender recipe when page changes
   $: {
     if (editor && $page.params.slug != $currentRecipe.id) {
-      textContent = $currentRecipe.name;
+      textContent = $currentRecipe.name
 
       if (
         $currentRecipe.instructions &&
         $currentRecipe.instructions.blocks &&
         $currentRecipe.instructions.blocks.length > 0
       ) {
-        autosave = false;
-        editor.blocks.render($currentRecipe.instructions).then(() => {
-          autosave = true;
-        });
+        autosave = false
+
+        editor.blocks
+          .render(transformBlocksToOriginal($currentRecipe.instructions))
+          .then(() => {
+            autosave = true
+          })
       } else {
-        editor.blocks.clear();
+        editor.blocks.clear()
       }
     }
   }
 
-  let editorConfig;
+  let editorConfig
 
   onMount(async () => {
-    const { list, image, underline, header, marker, table } = await loadTools();
-    const recipesStorage = storage.ref("recipes").child($currentRecipe.id);
-
-    async function uploadByFile(file) {
-      const snapshot = await recipesStorage
-        .child(file.name)
-        .put(file)
-
-      const url = await snapshot.ref.getDownloadURL();
-      return {
-        success: 1,
-        file: { url },
-      };
-    }
-
-    
-    // Since we had to convert the nested arrays into objects
-    // we now have to convert it back.
-    const editorData = $currentRecipe.instructions
-    if (editorData.blocks) {
-      editorData.blocks.forEach((block) => {
-        if (block.type === "table" && block.data.content) {
-          block.data.content = Object.values(block.data.content)
-        }
-      });
-    }
+    const {
+      list, image, underline, header, marker, table 
+    } = await loadTools()
 
     editorConfig = {
       autofocus: true,
-      placeholder: "Please write your instructions here",
-      holder: "editorjs",
-      data: editorData,
+      placeholder: 'Please write your instructions here',
+      holder: 'editorjs',
+      data: transformBlocksToOriginal($currentRecipe.instructions),
 
-      onChange(api) {
-        if (autosave) api.saver.save().then(saveInstructions);
+      onChange() {
+        if (autosave) saveInstructions()
       },
 
       tools: {
@@ -126,13 +95,17 @@
         },
         image: {
           class: image,
-          config: { uploader: { uploadByFile } },
+          config: {
+            uploader: {
+              uploadByFile(file) {
+                return uploadImage($currentRecipe.id, file)
+              } 
+            } 
+          },
         },
-        underline: underline,
-        header: header,
-        marker: {
-          class: marker,
-        },
+        underline,
+        header,
+        marker: { class: marker, },
         table: {
           class: table,
           inlineToolbar: true,
@@ -142,8 +115,8 @@
           },
         },
       },
-    };
-  });
+    }
+  })
 </script>
 
 <style lang="scss">

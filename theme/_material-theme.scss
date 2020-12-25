@@ -25,3 +25,7 @@ $material-dark-theme: (
 $material-light-theme: (
   'inline-toolbar': c.material-color('shades', 'white')
 );
+
+.simplebar-scrollbar::before {
+  background-color: c.material-color('grey', 'base');
+}
