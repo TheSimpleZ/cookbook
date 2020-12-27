@@ -15,7 +15,8 @@ import {
   CardActions,
   ButtonGroup,
   ButtonGroupItem,
-  Divider
+  Divider,
+  Tooltip
 } from 'svelte-materialify'
 import { mdiDelete, mdiPlus } from '@mdi/js'
 import 'simplebar'
@@ -46,7 +47,7 @@ function createNewRecipe() {
    * This is a hack to override the btn group styles.
    * Tailwind classes do not work here
    */
-  :global(.menu-btn) {
+  :global(.s-tooltip__wrapper) {
     flex-grow: 1 !important;
   }
 
@@ -57,13 +58,19 @@ function createNewRecipe() {
 
 <NavigationDrawer>
   <span slot="prepend">
-    <ButtonGroup elevated borderless class="w-full" activeClass="">
-      <ButtonGroupItem class="menu-btn" on:click={createNewRecipe}>
-        <Icon path={mdiPlus} />
-      </ButtonGroupItem>
-      <ButtonGroupItem class="menu-btn" on:click={() => {showDeleteDialog = true}}>
+    <ButtonGroup elevated borderless class="flex w-full" activeClass="">
+      <Tooltip bottom>
+        <ButtonGroupItem class="w-full" on:click={createNewRecipe}>
+          <Icon path={mdiPlus} />
+        </ButtonGroupItem>
+        <span slot="tip">New recipe</span>
+      </Tooltip>
+      <Tooltip bottom>
+      <ButtonGroupItem class="w-full" on:click={() => {showDeleteDialog = true}}>
         <Icon path={mdiDelete} />
       </ButtonGroupItem>
+      <span slot="tip">Delete recipe</span>
+    </Tooltip>
     </ButtonGroup>
   </span>
   <Divider />
