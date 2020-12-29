@@ -1,23 +1,10 @@
 <script context="module">
-
-import { collection } from '../lib/store'
-import { createRecipe } from '../lib/recipemanager'
-
 export async function preload(page, { user }) {
   if (!(user && user.uid)) {
     return 
   }
-  
- 
-  let recipes = collection('recipes').asRole(user.uid).limit(1)
-  
-  return recipes.preload(async (data) => {
-    if(!data || data.length === 0) {
-      data[0] = await recipes.add(createRecipe({ user }))
-    }
 
-    this.redirect(302, `/recipes/${data[0].id}`)
-  })
+  this.redirect(302, '/recipes')
 }
   
 </script>

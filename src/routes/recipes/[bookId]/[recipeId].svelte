@@ -1,56 +1,53 @@
 <script context="module">
-  import { collection } from '../../lib/store'
+  import { collection } from '../../../lib/store'
 
-  export async function preload({ params }, { user }) {
-    const preloaded = await collection('recipes').doc(params.slug).preload()
-
-    if (preloaded.data.roles[user.uid] !== 'owner') {
-      return this.redirect(302, '/recipes/access-denied')
-    }
-
+  export async function preload({ params }) {
+    const preloaded = await collection('books').doc(params.bookId).collection('recipes').doc(params.recipeId).preload()
     return preloaded
   }
 </script>
 
 <script>
-  import EditorJs from '../../components/EditorJs.svelte'
+  import EditorJs from '../../../components/EditorJs.svelte'
   import { stores } from '@sapper/app'
   import { readable } from 'svelte/store'
   import throttle from 'lodash.throttle'
   import { onMount } from 'svelte'
-  import { loadTools } from '../../lib/toolmanager'
+  import { loadTools } from '../../../lib/toolmanager'
   import {
     transformBlocksToFirebaseFriendly, transformBlocksToOriginal, uploadImage 
-} from '../../lib/recipemanager'
+} from '../../../lib/recipemanager'
 
   const { page } = stores()
 
   export let data
 
   let currentRecipe = readable(data)
-  $: currentRecipe = collection('recipes', data).doc($page.params.slug)
+  $: currentRecipe = collection('books', data).doc($page.params.bookId).collection('recipes').doc($page.params.recipeId)
 
+  
   let editor
-
+  
   // This variable is needed to prevent the onChange from
   // running when we change a recipe.
   let autosave = true
   let textContent = $currentRecipe.name
 
+
   const saveName = throttle(() => {
     $currentRecipe.name = textContent
   }, 500)
-
+  
   const saveInstructions = throttle(async () => {
     const data = await editor.save()
     $currentRecipe.instructions = transformBlocksToFirebaseFriendly(data)
   }, 500)
-
   
-
+  
+  
   // Rerender recipe when page changes
   $: {
-    if (editor && $page.params.slug != $currentRecipe.id) {
+    if (editor && $page.params.recipeId != $currentRecipe.id) {
       textContent = $currentRecipe.name
 
       if (
@@ -65,7 +62,7 @@
           .then(() => {
             autosave = true
           })
-      } else {
+      } else if(editor && editor.blocks) {
         editor.blocks.clear()
       }
     }

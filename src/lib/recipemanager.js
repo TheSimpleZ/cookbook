@@ -1,6 +1,13 @@
 import { storage } from './firebase'
 
 
+export function createRecipeBook({ user }) {
+  return {
+    roles: { [user.uid]: 'owner' }, 
+    name: 'My recipe book' 
+  }
+}
+
 export function createRecipe({ user }) {
   return {
     roles: { [user.uid]: 'owner' }, 
