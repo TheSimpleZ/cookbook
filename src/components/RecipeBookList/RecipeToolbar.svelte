@@ -15,6 +15,7 @@ import {
   mdiDelete, 
   mdiPlus, 
 } from '@mdi/js'
+import RecipeToolbarButton from './RecipeToolbarButton.svelte'
 import { createEventDispatcher } from 'svelte'
 const dispatch = createEventDispatcher()
 let showDeleteDialog = false
@@ -34,18 +35,8 @@ function createNewRecipe() {
 
 
 <ButtonGroup elevated borderless class="flex w-full" activeClass="">
-  <Tooltip bottom>
-    <ButtonGroupItem class="w-full" on:click={createNewRecipe}>
-      <Icon path={mdiPlus} />
-    </ButtonGroupItem>
-    <span slot="tip">New recipe</span>
-  </Tooltip>
-  <Tooltip bottom>
-  <ButtonGroupItem class="w-full" on:click={() => {showDeleteDialog = true}}>
-    <Icon path={mdiDelete} />
-  </ButtonGroupItem>
-  <span slot="tip">Delete recipe</span>
-</Tooltip>
+  <RecipeToolbarButton iconPath={mdiPlus} on:click={createNewRecipe}>New recipe</RecipeToolbarButton>
+  <RecipeToolbarButton iconPath={mdiDelete} on:click={() => {showDeleteDialog = true}}>Delete recipe</RecipeToolbarButton>
 </ButtonGroup>
 
 <Dialog bind:active={showDeleteDialog}>
