@@ -4,7 +4,7 @@ export async function preload(page, { user }) {
     return 
   }
 
-  this.redirect(302, '/recipes')
+  this.redirect(302, '/books')
 }
   
 </script>

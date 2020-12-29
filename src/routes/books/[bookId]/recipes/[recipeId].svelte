@@ -1,5 +1,5 @@
 <script context="module">
-  import { collection } from '../../../lib/store'
+  import { collection } from '../../../../lib/store'
 
   export async function preload({ params }) {
     const preloaded = await collection('books').doc(params.bookId).collection('recipes').doc(params.recipeId).preload()
@@ -8,15 +8,15 @@
 </script>
 
 <script>
-  import EditorJs from '../../../components/EditorJs.svelte'
+  import EditorJs from '../../../../components/EditorJs.svelte'
   import { stores } from '@sapper/app'
   import { readable } from 'svelte/store'
   import throttle from 'lodash.throttle'
   import { onMount } from 'svelte'
-  import { loadTools } from '../../../lib/toolmanager'
+  import { loadTools } from '../../../../lib/toolmanager'
   import {
     transformBlocksToFirebaseFriendly, transformBlocksToOriginal, uploadImage 
-} from '../../../lib/recipemanager'
+} from '../../../../lib/recipemanager'
 
   const { page } = stores()
 

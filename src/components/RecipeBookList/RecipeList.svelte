@@ -8,7 +8,7 @@
 
 <ListItemGroup mandatory bind:value={selectedRecipeIndex}>
 {#each $recipes as recipe, i}
-    <a rel=prefetch href={`/recipes/${bookId}/${recipe.id}`}>
+    <a rel=prefetch href={`/books/${bookId}/recipes/${recipe.id}`}>
       <ListItem link>
         {recipe.name || 'Untitled recipe'} 
       </ListItem>
