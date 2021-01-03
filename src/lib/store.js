@@ -86,7 +86,7 @@ export function collection(ref, initialData = [], query) {
         return function() {
           const newQuery = queryFunc(...arguments)
           
-          return collection(ref, initialData, newQuery)
+          return collection(newQuery, initialData)
         }
       }
     } 

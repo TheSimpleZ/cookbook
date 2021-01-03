@@ -19,29 +19,33 @@
   export let data
   const { page, session } = stores()
   const books = collection('books', data).asRole($session.user.uid)
-  const boooks = $books.map(book => {
+
+  $: booksWithRecipes = $books.map(book => {
     const recipes = collection('books').doc(book.id).collection('recipes')
     return {
       ...book,
       recipes
     }
-})
-
-
-  let currentRecipeIndex = $books.findIndex(e => e.id == $page.params.slug)
-  $: currentRecipeIndex = $books.findIndex(e => e.id == $page.params.slug)
+  })
 
   async function createNewRecipe() {
     const newRecipe = await books.add(createRecipeBook({ user: $session.user }))
-    await goto(`/recipes/${newRecipe.id}`)
+    await goto(`/books/${newRecipe.id}`)
+  }
+
+  async function createNewRecipeBook() {
+    const newBook = await collection('books').add(createRecipeBook({ user: $session.user }))
+    const newRecipe = await collection('books').doc(newBook.id).collection('recipes').add({})
+    await goto(`/books/${newBook.id}/recipes/${newRecipe.id}`)
+
   }
 
   async function deleteRecipe(e) {
     if($books.length == 1) {
       await createNewRecipe()
     } else {
-      const nextRecipeIndex = (currentRecipeIndex + 1) % $books.length
-      await goto(`/recipes/${$books[nextRecipeIndex].id}`)
+      // const nextRecipeIndex = (currentRecipeIndex + 1) % $books.length
+      // await goto(`/recipes/${$books[nextRecipeIndex].id}`)
     }
     await e.detail.recipe.delete()
   }
@@ -55,7 +59,7 @@
 </style>
 
 <div class="flex flex-1 app">
-  <RecipeBookList on:create={createNewRecipe} on:delete={deleteRecipe} books={boooks} bind:selectedRecipeIndex={currentRecipeIndex} />
+  <RecipeBookList on:create={createNewRecipe} on:createBook={createNewRecipeBook} on:delete={deleteRecipe} books={booksWithRecipes} selectedBookId={$page.params.bookId} selectedRecipeId={$page.params.recipeId} />
   <div class="flex-1" data-simplebar>
     <slot />
   </div>

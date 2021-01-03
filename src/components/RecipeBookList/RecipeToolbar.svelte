@@ -1,19 +1,17 @@
 <script>
 import {
   Button, 
-  Icon, 
   Dialog,
   Card,
   CardTitle,
   CardText,
   CardActions,
   ButtonGroup,
-  ButtonGroupItem,
-  Tooltip,
 } from 'svelte-materialify'
 import {
   mdiDelete, 
   mdiPlus, 
+  mdiBookPlus, 
 } from '@mdi/js'
 import RecipeToolbarButton from './RecipeToolbarButton.svelte'
 import { createEventDispatcher } from 'svelte'
@@ -30,12 +28,16 @@ function createNewRecipe() {
   dispatch('create')
 }
 
+function createNewRecipeBook() {
+  dispatch('createBook')
+}
 
 </script>
 
 
 <ButtonGroup elevated borderless class="flex w-full" activeClass="">
   <RecipeToolbarButton iconPath={mdiPlus} on:click={createNewRecipe}>New recipe</RecipeToolbarButton>
+  <RecipeToolbarButton iconPath={mdiBookPlus} on:click={createNewRecipeBook}>New recipe book</RecipeToolbarButton>
   <RecipeToolbarButton iconPath={mdiDelete} on:click={() => {showDeleteDialog = true}}>Delete recipe</RecipeToolbarButton>
 </ButtonGroup>
 

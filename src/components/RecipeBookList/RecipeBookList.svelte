@@ -17,9 +17,12 @@ import 'simplebar'
 import 'simplebar/dist/simplebar.css'
 
 export let books = []
-export let selectedRecipeIndex
- 
-let active = false
+export let selectedBookId
+export let selectedRecipeId
+
+
+
+let activeBook = books.map((b) => selectedBookId == b.id)
 
 </script>
 
@@ -40,21 +43,21 @@ let active = false
 
 <NavigationDrawer>
   <span slot="prepend">
-    <RecipeToolbar on:delete on:create/>
+    <RecipeToolbar on:delete on:create on:createBook/>
   </span>
   <Divider />
   <div class="flex-1 overflow-y-auto h-full" data-simplebar>
     <List nav>
-      {#each books as book}
-      <ListGroup bind:active offset={40}>
+      {#each books as book, i}
+      <ListGroup bind:active={activeBook[i]} offset={40}>
         <span slot="prepend">
           <Icon path={mdiBook} />
         </span>
-        <span slot="activator"> {book.name} </span>
+        <span slot="activator">{book.name}</span>
         <span slot="append">
-          <Icon path={mdiChevronUp} rotate={active ? 0 : 180} />
+          <Icon path={mdiChevronUp} rotate={activeBook[i] ? 0 : 180} />
         </span>
-        <RecipeList bookId={book.id} recipes={book.recipes} bind:selectedRecipeIndex/>
+        <RecipeList bookId={book.id} recipes={book.recipes} bind:selectedRecipeId/>
     </ListGroup>
     {/each}
     </List>
