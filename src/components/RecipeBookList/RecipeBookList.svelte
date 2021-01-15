@@ -8,7 +8,12 @@ import {
   ListItem,
   Menu,
   Button,
-  ButtonGroup
+  ButtonGroup,
+  Dialog,
+  Card,
+  CardTitle,
+  CardText,
+  CardActions
 } from 'svelte-materialify'
 import {
   mdiBook, 
@@ -32,8 +37,8 @@ import { stores } from '@sapper/app'
 
 export let selectedBookId
 export let selectedRecipeId
-
-
+let showDeleteDialog = false
+let deleteStatingArea = {}
 const { session } = stores()
 
 
@@ -45,7 +50,11 @@ function createNewRecipeBook() {
   books.add(createRecipeBook($session))
 }
 
-let activeBook = $books.map((b) => selectedBookId == b.id)
+let activeBook = []
+$: if($books && activeBook.length === 0)
+  activeBook = $books.map((b) => selectedBookId === b.id)
+
+// 
 </script>
 
 <style>
@@ -96,7 +105,7 @@ let activeBook = $books.map((b) => selectedBookId == b.id)
               <span slot="prepend"><Icon size={20} path={mdiShareVariant} /></span>
               Share
             </ListItem>
-            <ListItem class="red-text" on:click={() => book.delete()}>
+            <ListItem class="red-text" on:click={() => {deleteStatingArea = book; showDeleteDialog = true}}>
               <span slot="prepend"><Icon size={20} path={mdiDelete} /></span>
               Delete
             </ListItem>
@@ -110,3 +119,16 @@ let activeBook = $books.map((b) => selectedBookId == b.id)
     </List>
   </div>
 </NavigationDrawer>
+
+<Dialog bind:active={showDeleteDialog}>
+  <Card>
+    <CardTitle>Would you like to delete this recipe book?</CardTitle>
+    <CardText>
+      If you delete this book, all recipes in it will be lost <b>forever</b>
+    </CardText>
+    <CardActions>
+      <Button on:click={() => {showDeleteDialog = false; deleteStatingArea.delete()}} text class="red-text">Yes</Button>
+      <Button on:click={() => {showDeleteDialog = false}} text>No</Button>
+    </CardActions>
+  </Card>
+</Dialog>
