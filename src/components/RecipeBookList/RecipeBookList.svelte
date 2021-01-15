@@ -1,4 +1,3 @@
-
 <script>
 import {
   NavigationDrawer, 
@@ -8,7 +7,8 @@ import {
   ListGroup,
   ListItem,
   Menu,
-  Button
+  Button,
+  ButtonGroup
 } from 'svelte-materialify'
 import {
   mdiBook, 
@@ -17,38 +17,61 @@ import {
   mdiPlus,
   mdiRenameBox,
   mdiDelete,
-  mdiShareVariant
+  mdiShareVariant,
+  mdiBookPlus
 } from '@mdi/js'
 import RecipeList from './RecipeList.svelte'
-import RecipeToolbar from './RecipeToolbar.svelte'
+import RecipeToolbarButton from './RecipeToolbarButton.svelte'
 import 'simplebar'
 import 'simplebar/dist/simplebar.css'
+import {
+  books, recipes, createRecipe, createRecipeBook 
+} from '../../lib/recipemanager'
+import { stores } from '@sapper/app'
 
-export let books = []
+
 export let selectedBookId
 export let selectedRecipeId
 
-import { createEventDispatcher } from 'svelte'
-const dispatch = createEventDispatcher()
 
-function deleteRecipe() {
-  dispatch('delete', { recipeId: selectedRecipeId })
+const { session } = stores()
+
+
+function createNewRecipe(bookId) {
+  recipes(bookId).add(createRecipe($session))
 }
 
+function createNewRecipeBook() {
+  books.add(createRecipeBook($session))
+}
 
-let activeBook = books.map((b) => selectedBookId == b.id)
-
-
+let activeBook = $books.map((b) => selectedBookId == b.id)
 </script>
+
+<style>
+  /* 
+   * This is a hack to override the btn group styles.
+   * Tailwind classes do not work here
+   */
+  :global(.s-tooltip__wrapper) {
+    flex-grow: 1 !important;
+  }
+
+  :global(.s-navigation-drawer__content) {
+    overflow: hidden;
+  }
+</style>
 
 <NavigationDrawer>
   <span slot="prepend">
-    <RecipeToolbar on:delete={deleteRecipe} on:create on:createBook/>
+    <ButtonGroup elevated borderless class="flex w-full" activeClass="">
+      <RecipeToolbarButton iconPath={mdiBookPlus} on:click={() => createNewRecipeBook()}>New recipe book</RecipeToolbarButton>
+    </ButtonGroup>
   </span>
   <Divider />
   <div class="flex-1 overflow-y-auto h-full" data-simplebar>
     <List>
-      {#each books as book, i}
+      {#each $books as book, i}
       <ListGroup bind:active={activeBook[i]} offset={40} class='text--primary' activatorClass="overflow-visible" activatorProps={({ ripple: false })}>
         <span slot="prepend">
           <Icon path={activeBook[i] ? mdiBookOpen : mdiBook} />
@@ -57,11 +80,11 @@ let activeBook = books.map((b) => selectedBookId == b.id)
         <span slot="append" on:click|stopPropagation="">
           <Menu right >
             <div slot="activator">
-              <Button icon on:click={() => {} }>
+              <Button icon>
                 <Icon path={mdiDotsVertical} />
               </Button>
             </div>
-            <ListItem>
+            <ListItem on:click={() => createNewRecipe(book.id)}>
               <span slot="prepend"><Icon size={20} path={mdiPlus} /></span>
               Add new recipe
             </ListItem>
@@ -73,14 +96,14 @@ let activeBook = books.map((b) => selectedBookId == b.id)
               <span slot="prepend"><Icon size={20} path={mdiShareVariant} /></span>
               Share
             </ListItem>
-            <ListItem class="red-text">
+            <ListItem class="red-text" on:click={() => book.delete()}>
               <span slot="prepend"><Icon size={20} path={mdiDelete} /></span>
               Delete
             </ListItem>
           </Menu>
         </span>
         <div>
-          <RecipeList bookId={book.id} recipes={book.recipes} bind:selectedRecipeId/>
+          <RecipeList bookId={book.id} bind:selectedRecipeId/>
         </div>
     </ListGroup>
     {/each}

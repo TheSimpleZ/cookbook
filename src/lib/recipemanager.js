@@ -1,5 +1,5 @@
 import { storage } from './firebase'
-
+import { collection } from './store.js'
 
 export function createRecipeBook({ user }) {
   return {
@@ -33,6 +33,11 @@ export function createRecipe({ user }) {
     } 
   }
 }
+
+
+export const books = collection('books')
+export const recipes = (bookId, initialData) => collection('books', initialData).doc(bookId).collection('recipes')
+
 
 
 

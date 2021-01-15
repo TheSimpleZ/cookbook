@@ -58,7 +58,7 @@ const { session } = stores()
 <MaterialApp {theme}>
 	<div class="h-screen flex flex-column overflow-hidden">
 		<nav class="z-10">
-			<AppBar dense>
+			<AppBar>
         <span slot="title">Kookbook</span>
         <div style="flex-grow:1" />
 				<div class="mr-4">

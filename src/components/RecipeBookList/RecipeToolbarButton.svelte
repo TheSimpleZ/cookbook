@@ -12,5 +12,7 @@ export let iconPath
   <ButtonGroupItem class="w-full" on:click>
     <Icon path={iconPath} />
   </ButtonGroupItem>
-  <span slot="tip"><slot/></span>
+  <span slot="tip">
+    <slot />
+  </span>
 </Tooltip>

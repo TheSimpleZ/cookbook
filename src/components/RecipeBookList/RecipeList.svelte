@@ -1,15 +1,18 @@
 <script>
   import { ListItem, ListItemGroup } from 'svelte-materialify'
+  import { recipes } from '../../lib/recipemanager'
 
   export let bookId
-  export let recipes
   export let selectedRecipeId
   
-  $: selectedRecipeIndex = $recipes.findIndex(r => selectedRecipeId === r.id)
+  
+  const recipesStore = recipes(bookId)
+
+  $: selectedRecipeIndex = $recipesStore.findIndex(r => selectedRecipeId === r.id)
 </script>
 
 <ListItemGroup bind:value={selectedRecipeIndex}>
-{#each $recipes as recipe}
+{#each $recipesStore as recipe}
     <a rel=prefetch href={`/books/${bookId}/recipes/${recipe.id}`}>
       <ListItem link class={(recipe.name ? '' : 'text--secondary')}>
         {recipe.name || 'Untitled recipe'}

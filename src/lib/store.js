@@ -60,7 +60,7 @@ export function collection(ref, initialData = [], query) {
 
   // We also add an `add` method to our store,
   // which forwards the call to the firestore collection reference.
-  store.add = doc => ref.add(doc)
+  store.add = doc => query.add(doc)
 
   // Used to preload data in sapper
   store.preload = async (returnValueBuilder = data => ({ data })) => {
@@ -86,7 +86,7 @@ export function collection(ref, initialData = [], query) {
         return function() {
           const newQuery = queryFunc(...arguments)
           
-          return collection(newQuery, initialData)
+          return collection(ref, initialData, newQuery)
         }
       }
     } 
