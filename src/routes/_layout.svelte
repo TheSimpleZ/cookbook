@@ -3,7 +3,7 @@
 	import { AppBar, Button } from 'svelte-materialify'
 	import { stores, goto } from '@sapper/app'
 	import {
-  MaterialApp, Avatar, Menu, ListItem, List 
+  MaterialApp, Avatar, Menu, ListItem 
 } from 'svelte-materialify'
 	import { onMount } from 'svelte'
 
@@ -48,31 +48,34 @@ const { session } = stores()
   .app {
     height: calc(100vh - 48px);
   }
+
+  /*adjust weird styling issue with menus*/
+  :global(.s-list-item__title) {
+    line-height: 1.5;
+  }
 </style>
 
 <MaterialApp {theme}>
 	<div class="h-screen flex flex-column overflow-hidden">
-		<nav>
+		<nav class="z-10">
 			<AppBar dense>
-				<span slot="title">Kookbook</span>
-				<div style="flex-grow:1" />
+        <span slot="title">Kookbook</span>
+        <div style="flex-grow:1" />
 				<div class="mr-4">
 					{#if $session.user}
-            <Menu nudgeX="-50" >
+            <Menu right >
               <div slot="activator">
-                <Button fab>
+                <Button fab depressed>
                   <Avatar size={40}><img src={$session.user.photoURL} alt="profile" /></Avatar>
                 </Button>
               </div>
-              <List>
-                <ListItem on:click={logout}>Log out</ListItem>
-              </List>
+              <ListItem on:click={logout}>Log out</ListItem>
             </Menu>
-					{/if}
-				</div>
+          {/if}
+        </div>
 			</AppBar>
 		</nav>
-		<div class="app">
+		<div class="app z-0">
 			<slot />
 		</div>
 	</div>

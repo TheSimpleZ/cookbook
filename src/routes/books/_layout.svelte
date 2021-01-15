@@ -1,10 +1,18 @@
 <script context="module">
   import { collection } from '../../lib/store'
 
-  export function preload (_, { user }) { 
-    return user.uid 
-      ? collection('books').asRole(user.uid).preload() 
-      : this.redirect(302, '/')
+  export async function preload ({ bookId }, { user }) { 
+    if(!user.uid) this.redirect(302, '/')
+
+    const result = {}
+
+    if(user.uid)
+      result.booksData = (await collection('books').asRole(user.uid).preload()).data
+
+    if(bookId)
+      result.bookData = (await collection('books').doc(bookId).preload()).data
+
+    return result
   }
   
 </script>
@@ -16,38 +24,43 @@
   import 'simplebar'
   import 'simplebar/dist/simplebar.css'
 
-  export let data
-  const { page, session } = stores()
-  const books = collection('books', data).asRole($session.user.uid)
+  export let booksData
+  export let bookData
 
-  $: booksWithRecipes = $books.map(book => {
-    const recipes = collection('books').doc(book.id).collection('recipes')
+  const { page, session } = stores()
+
+  let book = $page.params.bookId && collection('books', bookData).doc($page.params.bookId)
+  $: book = $page.params.bookId && collection('books', bookData).doc($page.params.bookId)
+
+  let recipes = $page.params.bookId && book.collection('recipes')
+  $: recipes = $page.params.bookId && book.collection('recipes')
+
+  const books = collection('books', booksData).asRole($session.user.uid)
+  $: booksWithRecipes = $books.map(b => {
+    const bookRecipes = collection('books').doc(b.id).collection('recipes')
     return {
-      ...book,
-      recipes
+      ...b,
+      recipes: bookRecipes
     }
   })
 
   async function createNewRecipe() {
-    const newRecipe = await books.add(createRecipeBook({ user: $session.user }))
-    await goto(`/books/${newRecipe.id}`)
+    const newRecipe = await recipes.add({})
+    await goto(`/books/${$page.params.bookId}/recipes/${newRecipe.id}`)
   }
 
   async function createNewRecipeBook() {
-    const newBook = await collection('books').add(createRecipeBook({ user: $session.user }))
-    const newRecipe = await collection('books').doc(newBook.id).collection('recipes').add({})
+    const newBook = await book.add(createRecipeBook({ user: $session.user }))
+    const newRecipe = await recipes.add({})
     await goto(`/books/${newBook.id}/recipes/${newRecipe.id}`)
 
   }
 
   async function deleteRecipe(e) {
-    if($books.length == 1) {
-      await createNewRecipe()
-    } else {
-      // const nextRecipeIndex = (currentRecipeIndex + 1) % $books.length
-      // await goto(`/recipes/${$books[nextRecipeIndex].id}`)
-    }
-    await e.detail.recipe.delete()
+    // const nextRecipeIndex = (currentRecipeIndex + 1) % $books.length
+    // await goto(`/recipes/${$books[nextRecipeIndex].id}`)
+    await $recipes.find((r) => e.detail.recipeId === r.id).delete()
+    await goto('/books')
   }
 </script>
 
